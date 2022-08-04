@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/SmartDCCInnovation/dccboxed-keystore/blob/main/schema.json",
+  "type": "object",
+  "patternProperties": {
+    "^[0-9a-f]{16}$": {
+      "type": "object",
+      "description": "eui of the certificate",
+      "properties": {
+        "keyAgreement": {
+          "$ref": "#/$defs/common",
+          "description": "list of key agreement certificates/private keys"
+        },
+        "digitalSignature": {
+          "$ref": "#/$defs/common",
+          "description": "list of key agreement certificates/private keys"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "common": {
+      "type": "object",
+      "patternProperties": {
+        "^[0-9]+$": {
+          "type": "object",
+          "description": "serial number of certificate",
+          "properties": {
+            "certificate": {
+              "type": "string",
+              "description": "pem encoded x509 certificate"
+            },
+            "privateKey": {
+              "type": "string",
+              "description": "pem encoded pkcs8 key"
+            },
+            "role": {
+              "type": "number",
+              "description": "remote party role, when present indicates entry corresponds to a remote party"
+            },
+            "name": {
+              "type": "string",
+              "description": "free form text about the entry"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
