@@ -69,6 +69,8 @@ console.log(
     role: 2
   })
 )
+
+await keyStore.cleanup()
 ```
 
 Its just as easy to lookup a device certificate (which is not stored in
@@ -121,7 +123,7 @@ Client side code to query the DCC Boxed SMKI service is located in
 
 ## Other Info
 
-Copyright 2022, Smart DCC Limited, All rights reserved. Project is licensed under GLPv3.
+Copyright 2022, Smart DCC Limited, All rights reserved. Project is licensed under GPLv3.
 
 [duis]: https://smartenergycodecompany.co.uk/the-smart-energy-code-2/ 'Smart Energy Code'
 [boxed]: https://www.smartdcc.co.uk/our-smart-network/network-products-services/dcc-boxed/ 'DCC Boxed'
