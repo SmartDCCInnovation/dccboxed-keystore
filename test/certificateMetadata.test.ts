@@ -460,7 +460,7 @@ describe('buildOrgCertificateMetadata', () => {
         'base64'
       )
     )
-    expect(() => cm.buildOrgCertificateMetadata(cert)).toThrow('invalid')
+    expect(() => cm.buildOrgCertificateMetadata(cert)).toThrow('expected ECDSA')
   })
 })
 

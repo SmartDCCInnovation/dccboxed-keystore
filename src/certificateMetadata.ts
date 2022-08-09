@@ -178,6 +178,20 @@ export function parseKeyUsageFromExtensions(
 }
 
 /**
+ * Given an algorithm identifier (as defined by RFC2459), throw an exception if
+ * its not ecdsa with sha256.
+ *
+ * @param algId
+ */
+export function assertKeyType(algId: SEQUENCE<ASN1Element>): void {
+  if (
+    algId[0].objectIdentifier.dotDelimitedNotation !== '1.2.840.10045.4.3.2'
+  ) {
+    throw new Error('expected ECDSA with SHA256')
+  }
+}
+
+/**
  * parse metadata from a organisation certificate, throws exception if not
  * correct format.
  * @param cert
@@ -191,6 +205,7 @@ export function buildOrgCertificateMetadata(
   /* below assumes standard certificate structure, see RFC2459 section 4 */
   const tbsCertificate = root.sequence[0].sequence
   const serial = tbsCertificate[1].integer
+  assertKeyType(tbsCertificate[2].sequence)
   const subjectRDNs = tbsCertificate[5].sequence
   const subject = parseOrganisationSubject(subjectRDNs)
   const keyUsage = parseKeyUsageFromExtensions(tbsCertificate.slice(7))
@@ -244,6 +259,7 @@ export function buildDeviceCertificateMetadata(
   /* below assumes standard certificate structure, see RFC2459 section 4 */
   const tbsCertificate = root.sequence[0].sequence
   const serial = tbsCertificate[1].integer
+  assertKeyType(tbsCertificate[2].sequence)
   const eui = parseSubjectAltNameFromExtensions(tbsCertificate)
   const keyUsage = parseKeyUsageFromExtensions(tbsCertificate)
 
