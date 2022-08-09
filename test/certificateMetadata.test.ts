@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { ASN1Element, BERElement, SEQUENCE } from 'asn1-ts'
+import { BERElement } from 'asn1-ts'
 import { X509Certificate } from 'crypto'
 import * as cm from '../src/certificateMetadata'
 
