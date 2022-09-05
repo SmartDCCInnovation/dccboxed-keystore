@@ -10,7 +10,9 @@
     "test:cov": "jest --coverage",
     "prebuild": "del dist",
     "build": "tsc",
-    "build:db": "ts-node scripts/index.ts"
+    "build:db": "ts-node scripts/index.ts",
+    "lint": "eslint src/",
+    "prettier-check": "prettier -c  \"src/**/*.{css,html,ts,json,md,yaml,yml}\""
   },
   "repository": {
     "type": "git",
