@@ -146,6 +146,17 @@ const orgCert_90b3d51f30010000_ds_xmlSign = `
   7rowBKUyf62/hreDAIn3fEoCIDVnSEzk+wBn2NJ392d+S9sd03Wca5m4YVgyb2GT
   eX8c`
 
+const orgCert_90b3d51f30000002_ds_dSPXmlSign = `
+  MIIBgTCCASagAwIBAgIQJh6czECnj9E9g7zgfaz+CDAKBggqhkjOPQQDAjAaMQsw
+  CQYDVQQLDAIwNzELMAkGA1UEAwwCWjEwIBcNMTgwMTAxMDAwMDAwWhgPMjExODAx
+  MDEwMDAwMDBaMCIxDDAKBgNVBAsMAzEzNzESMBAGA1UELQMJAJCz1R8wAAACMFkw
+  EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEy6L/kuNdeoI9d4E40kG8pFJmU7SxSjT0
+  QusPUx/ubhvf58YPLd4W6KO/A/K7rqNW+Ng2uJJEuTkgXrJJdAcarqNEMEIwHQYD
+  VR0gAQH/BBMwETAPBg0qhjoAAYSPuQ8BAgEEMBEGA1UdDgQKBAhCAIJI5BLfxjAO
+  BgNVHQ8BAf8EBAMCB4AwCgYIKoZIzj0EAwIDSQAwRgIhANbCJxDXiUHG7ZYbZHm+
+  sAhl1ctp853ifd1c9ps260NwAiEAiK3Dwf6rroFd2p0Rv9TceON2KINvNAAAA5QE
+  XhPLQM0=`
+
 describe('query', () => {
   beforeEach(() => {
     gotMock.mockReset()
@@ -943,68 +954,68 @@ describe('search', () => {
             statusCode: 200,
             headers: { 'content-type': 'application/xml; charset=utf-8' },
             body: `
-              <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-              <CertificateSearchResponse>
-                <ResponseCode>200</ResponseCode>
-                <ResponseMessage>Success</ResponseMessage>
-                <AuditReference>1234567890-abc123456</AuditReference>
-                <Result>
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <CertificateSearchResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <Result>
                   <CertificateSerial>3B362657731E6B2BBE078650CFA14F15</CertificateSerial>
                   <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
+                <CertificateStatus>I</CertificateStatus>
                   <CertificateRole>2</CertificateRole>
-                  <CertificateUsage>KA</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-                <Result>
+                <CertificateUsage>KA</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
                   <CertificateSerial>52D7B8A109F26D898CE821C32878F618</CertificateSerial>
                   <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
+                <CertificateStatus>I</CertificateStatus>
                   <CertificateRole>2</CertificateRole>
-                  <CertificateUsage>KA</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-                <Result>
-                  <CertificateSerial>5BC2F4D9349C5E0F2DE978BDBE476FE6</CertificateSerial>
-                  <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
-                  <CertificateRole>2</CertificateRole>
-                  <CertificateUsage>KA</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-                <Result>
-                  <CertificateSerial>4FBC525201A1D7586C1BC1C4734DEB9F</CertificateSerial>
-                  <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
-                  <CertificateRole>2</CertificateRole>
-                  <CertificateUsage>DS</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-                <Result>
-                  <CertificateSerial>703733774EF2B8E50F7AF2BBB33C198F</CertificateSerial>
-                  <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
-                  <CertificateRole>2</CertificateRole>
-                  <CertificateUsage>KA</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-                <Result>
-                  <CertificateSerial>4A07BC01D9253B51FAF01F7EC7DA5B2F</CertificateSerial>
-                  <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
-                  <CertificateRole>2</CertificateRole>
-                  <CertificateUsage>DS</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-                <Result>
-                  <CertificateSerial>14BE4AD2EA1D0E4EC7F7156BD24624A7</CertificateSerial>
-                  <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
-                  <CertificateStatus>I</CertificateStatus>
-                  <CertificateRole>135</CertificateRole>
-                  <CertificateUsage>DS</CertificateUsage>
-                  <ManufacturingFlag>false</ManufacturingFlag>
-                </Result>
-              </CertificateSearchResponse>`,
+                <CertificateUsage>KA</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+              <CertificateSerial>5BC2F4D9349C5E0F2DE978BDBE476FE6</CertificateSerial>
+              <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateRole>2</CertificateRole>
+              <CertificateUsage>KA</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+            </Result>
+            <Result>
+              <CertificateSerial>4FBC525201A1D7586C1BC1C4734DEB9F</CertificateSerial>
+              <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateRole>2</CertificateRole>
+              <CertificateUsage>DS</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+            </Result>
+            <Result>
+              <CertificateSerial>703733774EF2B8E50F7AF2BBB33C198F</CertificateSerial>
+              <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateRole>2</CertificateRole>
+              <CertificateUsage>KA</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+            </Result>
+            <Result>
+              <CertificateSerial>4A07BC01D9253B51FAF01F7EC7DA5B2F</CertificateSerial>
+              <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateRole>2</CertificateRole>
+              <CertificateUsage>DS</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+            </Result>
+            <Result>
+              <CertificateSerial>14BE4AD2EA1D0E4EC7F7156BD24624A7</CertificateSerial>
+              <CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateRole>135</CertificateRole>
+              <CertificateUsage>DS</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+            </Result>
+          </CertificateSearchResponse>`,
           } as Response<string>)
         })
       } else {
@@ -1058,6 +1069,117 @@ describe('search', () => {
       expect.objectContaining({
         body: cs.prepareRequest('CertificateDataRequest', {
           CertificateSerial: '14BE4AD2EA1D0E4EC7F7156BD24624A7',
+        }),
+      })
+    )
+  })
+
+  test('nominal-organisation-acb-dSPXmlSign', async () => {
+    gotMock.mockImplementation((x, { body }) => {
+      if (x.endsWith('certificatesearch')) {
+        return new Promise<Response<string>>((resolve) => {
+          resolve({
+            statusCode: 200,
+            headers: { 'content-type': 'application/xml; charset=utf-8' },
+            body: `
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <CertificateSearchResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <Result>
+                <CertificateSerial>37CDF206B07DDEF852FBC62950F22ED0</CertificateSerial>
+                <CertificateSubjectName>90-B3-D5-1F-30-00-00-02</CertificateSubjectName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateRole>4</CertificateRole>
+                <CertificateUsage>KA</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+                <CertificateSerial>587FE59553E2675B0C0E2A5C402A9F61</CertificateSerial>
+                <CertificateSubjectName>90-B3-D5-1F-30-00-00-02</CertificateSubjectName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateRole>4</CertificateRole>
+                <CertificateUsage>DS</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+                <CertificateSerial>630CEB61682F9941A09574081F69A6B7</CertificateSerial>
+                <CertificateSubjectName>90-B3-D5-1F-30-00-00-02</CertificateSubjectName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateRole>4</CertificateRole>
+                <CertificateUsage>KA</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+                <CertificateSerial>3A96BD63616C4F886DA7F89969772424</CertificateSerial>
+                <CertificateSubjectName>90-B3-D5-1F-30-00-00-02</CertificateSubjectName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateRole>4</CertificateRole>
+                <CertificateUsage>DS</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+                <CertificateSerial>261E9CCC40A78FD13D83BCE07DACFE08</CertificateSerial>
+                <CertificateSubjectName>90-B3-D5-1F-30-00-00-02</CertificateSubjectName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateRole>137</CertificateRole>
+                <CertificateUsage>DS</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+            </CertificateSearchResponse>`,
+          } as Response<string>)
+        })
+      } else {
+        return new Promise<Response<string>>((resolve) => {
+          resolve({
+            statusCode: 200,
+            headers: { 'content-type': 'application/xml; charset=utf-8' },
+            body: `
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <CertificateDataResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <CertificateResponse>
+                <CertificateSubjectName>90-B3-D5-1F-30-00-00-02</CertificateSubjectName>
+                <CertificateSerial>261E9CCC40A78FD13D83BCE07DACFE08</CertificateSerial>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateBody>${orgCert_90b3d51f30000002_ds_dSPXmlSign}</CertificateBody>
+                <CertificateRole>137</CertificateRole>
+                <CertificateUsage>DS</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </CertificateResponse>
+            </CertificateDataResponse>
+            `,
+          } as Response<string>)
+        })
+      }
+    })
+    const q = {
+      q: {
+        CertificateSubjectName: '90-B3-D5-1F-30-00-00-02',
+      },
+      CertificateUsage: cs.CertificateUsage['Digital Signing'],
+      CertificateStatus: cs.CertificateStatus['In use'],
+      CertificateRole: cs.CertificateRole.DspXmlSign,
+    }
+    const x509 = new X509Certificate(
+      Buffer.from(orgCert_90b3d51f30000002_ds_dSPXmlSign, 'base64')
+    )
+    await expect(cs.search(q, '1.2.3.4')).resolves.toMatchObject([
+      {
+        meta: buildOrgCertificateMetadata(x509),
+        x509,
+      },
+    ])
+    expect(gotMock).toHaveBeenCalledTimes(2)
+    expect(gotMock).toHaveBeenNthCalledWith(
+      2,
+      'http://1.2.3.4:8083/services/retrievecertificate',
+      expect.objectContaining({
+        body: cs.prepareRequest('CertificateDataRequest', {
+          CertificateSerial: '261E9CCC40A78FD13D83BCE07DACFE08',
         }),
       })
     )
