@@ -52,6 +52,7 @@ export const enum CertificateRole {
   'Load Controller' = '8',
   Other = '127',
   XmlSign = '135',
+  DspXmlSign = '137',
 }
 
 /**
