@@ -63,7 +63,7 @@
   "build": "tsc",
   "dependencies": {
     "@types/tmp": "^0.2.3",
-    "asn1-ts": "^7.0.7",
+    "asn1-ts": "^7.0.10",
     "fast-xml-parser": "^4.0.9",
     "node-json-db": "^1.6.0",
     "tmp": "^0.2.1"
