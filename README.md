@@ -77,7 +77,7 @@ An example of its usage would be as follows:
 import { BoxedKeyStore, KeyUsage } from '@smartdcc/dccboxed-keystore'
 
 const boxedIpAddress: string = '1.2.3.4'
-const keyStore = new BoxedKeyStore(boxedIpAddress)
+const keyStore = await BoxedKeyStore.new(boxedIpAddress)
 
 console.log(
   await keyStore.query({
@@ -194,7 +194,7 @@ If persistence of the local cache is required between program runs then the
 class should be instantiated as follows:
 
 ```typescript
-const keyStore = new BoxedKeyStore(boxedIpAddress, localCacheFile)
+const keyStore = BoxedKeyStore.new(boxedIpAddress, localCacheFile)
 ```
 
 If the `localCacheFile` is omitted, a temporary file is crated in the system temp
