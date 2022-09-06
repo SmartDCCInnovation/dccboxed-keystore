@@ -149,22 +149,24 @@ describe('KeyStoreDB', () => {
 
   test('constructor', async () => {
     await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-    expect(new db.KeyStoreDB(testDbName)).toBeInstanceOf(db.KeyStoreDB)
+    await expect(db.KeyStoreDB.new(testDbName)).resolves.toBeInstanceOf(
+      db.KeyStoreDB
+    )
     await expect(stat(testDbName)).resolves.toMatchObject({ size: 2 })
   })
 
   describe('push', () => {
     test('push-cert', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30000001_ds_cert, 'base64')
       )
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
         })
-      ).toMatchObject({
+      ).resolves.toMatchObject({
         eui: new EUI('90b3d51f30000001'),
         role: 1,
         keyUsage: [KeyUsage.digitalSignature],
@@ -188,7 +190,7 @@ describe('KeyStoreDB', () => {
 
     test('push-cert-key', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30000001_ds_cert, 'base64')
       )
@@ -197,12 +199,12 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
           private: key_ds,
         })
-      ).toMatchObject({
+      ).resolves.toMatchObject({
         eui: new EUI('90b3d51f30000001'),
         role: 1,
         keyUsage: [KeyUsage.digitalSignature],
@@ -229,7 +231,7 @@ describe('KeyStoreDB', () => {
 
     test('push-cert-key-duplicate', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30000001_ds_cert, 'base64')
       )
@@ -238,18 +240,18 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
           private: key_ds,
         })
-      ).toBeDefined()
-      expect(
+      ).resolves.toBeDefined()
+      await expect(
         keystore.push({
           certificate: x509_ds,
           private: key_ds,
         })
-      ).toBeDefined()
+      ).resolves.toBeDefined()
       await expect(
         readFile(testDbName, { encoding: 'utf-8' }).then(JSON.parse)
       ).resolves.toStrictEqual({
@@ -271,7 +273,7 @@ describe('KeyStoreDB', () => {
 
     test('push-cert-key-sequential', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30000001_ds_cert, 'base64')
       )
@@ -280,12 +282,12 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
         })
-      ).toBeDefined()
-      expect(
+      ).resolves.toBeDefined()
+      await expect(
         keystore.push({
           meta: {
             eui: '90-B3-D5-1F-30-00-00-01',
@@ -295,7 +297,7 @@ describe('KeyStoreDB', () => {
           },
           private: key_ds,
         })
-      ).toBeDefined()
+      ).resolves.toBeDefined()
       await expect(
         readFile(testDbName, { encoding: 'utf-8' }).then(JSON.parse)
       ).resolves.toStrictEqual({
@@ -317,7 +319,7 @@ describe('KeyStoreDB', () => {
 
     test('push-cert-key-sequential-missing-role', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30000001_ds_cert, 'base64')
       )
@@ -326,12 +328,12 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
         })
-      ).toBeDefined()
-      expect(
+      ).resolves.toBeDefined()
+      await expect(
         keystore.push({
           meta: {
             eui: '90-B3-D5-1F-30-00-00-01',
@@ -340,7 +342,7 @@ describe('KeyStoreDB', () => {
           },
           private: key_ds,
         })
-      ).toBeDefined()
+      ).resolves.toBeDefined()
       await expect(
         readFile(testDbName, { encoding: 'utf-8' }).then(JSON.parse)
       ).resolves.toStrictEqual({
@@ -362,7 +364,7 @@ describe('KeyStoreDB', () => {
 
     test('push-cert-key-multiple-usage', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
       )
@@ -379,18 +381,18 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
           private: key_ds,
         })
-      ).toBeDefined()
-      expect(
+      ).resolves.toBeDefined()
+      await expect(
         keystore.push({
           certificate: x509_ka,
           private: key_ka,
         })
-      ).toBeDefined()
+      ).resolves.toBeDefined()
       await expect(
         readFile(testDbName, { encoding: 'utf-8' }).then(JSON.parse)
       ).resolves.toStrictEqual({
@@ -423,7 +425,7 @@ describe('KeyStoreDB', () => {
 
     test('push-device-cert-key-multiple-usage', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(device_00db1234567890a4_ds_cert, 'base64')
       )
@@ -440,18 +442,18 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
           private: key_ds,
         })
-      ).toBeDefined()
-      expect(
+      ).resolves.toBeDefined()
+      await expect(
         keystore.push({
           certificate: x509_ka,
           private: key_ka,
         })
-      ).toBeDefined()
+      ).resolves.toBeDefined()
       await expect(
         readFile(testDbName, { encoding: 'utf-8' }).then(JSON.parse)
       ).resolves.toStrictEqual({
@@ -482,7 +484,7 @@ describe('KeyStoreDB', () => {
 
     test('push-multiple-eui', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
       )
@@ -499,18 +501,18 @@ describe('KeyStoreDB', () => {
         format: 'der',
         type: 'pkcs8',
       })
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
           private: key_ds,
         })
-      ).toBeDefined()
-      expect(
+      ).resolves.toBeDefined()
+      await expect(
         keystore.push({
           certificate: x509_ka,
           private: key_ka,
         })
-      ).toBeDefined()
+      ).resolves.toBeDefined()
       await expect(
         readFile(testDbName, { encoding: 'utf-8' }).then(JSON.parse)
       ).resolves.toStrictEqual({
@@ -524,8 +526,8 @@ describe('KeyStoreDB', () => {
     })
 
     describe('errors', () => {
-      test('invalid-keypair', () => {
-        const keystore = new db.KeyStoreDB(testDbName)
+      test('invalid-keypair', async () => {
+        const keystore = await db.KeyStoreDB.new(testDbName)
         const x509_ds = new X509Certificate(
           Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
         )
@@ -534,32 +536,32 @@ describe('KeyStoreDB', () => {
           format: 'der',
           type: 'pkcs8',
         })
-        expect(() =>
+        await expect(() =>
           keystore.push({
             certificate: x509_ds,
             private: key_ka,
           })
-        ).toThrow('key pair')
+        ).rejects.toThrow('key pair')
       })
 
-      test('bad-cert', () => {
-        const keystore = new db.KeyStoreDB(testDbName)
+      test('bad-cert', async () => {
+        const keystore = await db.KeyStoreDB.new(testDbName)
         const x509_ds = new X509Certificate(Buffer.from(https_cert, 'base64'))
-        expect(() =>
+        await expect(() =>
           keystore.push({
             certificate: x509_ds,
           })
-        ).toThrow('unable to extract metadata from certificate')
+        ).rejects.toThrow('unable to extract metadata from certificate')
       })
 
-      test('no-keyUsage', () => {
-        const keystore = new db.KeyStoreDB(testDbName)
+      test('no-keyUsage', async () => {
+        const keystore = await db.KeyStoreDB.new(testDbName)
         const key_ka = createPrivateKey({
           key: Buffer.from(device_00db1234567890a4_ka_key, 'base64'),
           format: 'der',
           type: 'pkcs8',
         })
-        expect(() =>
+        await expect(() =>
           keystore.push({
             meta: {
               eui: '00db1234567890a4',
@@ -568,22 +570,22 @@ describe('KeyStoreDB', () => {
             },
             private: key_ka,
           })
-        ).toThrow('unsupported keyUsage')
+        ).rejects.toThrow('unsupported keyUsage')
       })
     })
 
     test('push-cert-name', async () => {
       await expect(stat(testDbName)).rejects.toMatchObject({ code: 'ENOENT' })
-      const keystore = new db.KeyStoreDB(testDbName)
+      const keystore = await db.KeyStoreDB.new(testDbName)
       const x509_ds = new X509Certificate(
         Buffer.from(org_90b3d51f30000001_ds_cert, 'base64')
       )
-      expect(
+      await expect(
         keystore.push({
           certificate: x509_ds,
           name: 'test name',
         })
-      ).toMatchObject({
+      ).resolves.toMatchObject({
         eui: new EUI('90b3d51f30000001'),
         role: 1,
         keyUsage: [KeyUsage.digitalSignature],
@@ -611,16 +613,16 @@ describe('KeyStoreDB', () => {
     let keystore: db.KeyStoreDB
 
     /* preload the datastore with a device and supplier cert */
-    beforeEach(() => {
-      keystore = new db.KeyStoreDB(testDbName)
+    beforeEach(async () => {
+      keystore = await db.KeyStoreDB.new(testDbName)
 
-      keystore.push({
+      await keystore.push({
         certificate: new X509Certificate(
           Buffer.from(device_00db1234567890a4_ka_cert, 'base64')
         ),
       })
 
-      keystore.push({
+      await keystore.push({
         certificate: new X509Certificate(
           Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
         ),
@@ -631,7 +633,7 @@ describe('KeyStoreDB', () => {
         }),
       })
 
-      keystore.push({
+      await keystore.push({
         certificate: new X509Certificate(
           Buffer.from(org_90b3d51f30010000_ka_cert, 'base64')
         ),
@@ -643,7 +645,7 @@ describe('KeyStoreDB', () => {
         name: 'Z1-supplier-ka',
       })
 
-      keystore.push({
+      await keystore.push({
         certificate: new X509Certificate(
           Buffer.from(org_90b3d51f30010000_xmlSign_cert, 'base64')
         ),

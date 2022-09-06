@@ -109,10 +109,10 @@ describe('BoxedKeyStore', () => {
     ywIhAMWtZ3u/bQs4oFbKuXDQreKUFw2W7kRVbOa8NbYFXR92`
 
   /* preload the backing datastore with supplier cert */
-  beforeAll(() => {
-    const keystore = new KeyStoreDB(testBackingDbName)
+  beforeAll(async () => {
+    const keystore = await KeyStoreDB.new(testBackingDbName)
 
-    keystore.push({
+    await keystore.push({
       certificate: new X509Certificate(
         Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
       ),
@@ -123,7 +123,7 @@ describe('BoxedKeyStore', () => {
       }),
     })
 
-    keystore.push({
+    await keystore.push({
       certificate: new X509Certificate(
         Buffer.from(org_90b3d51f30010000_ka_cert, 'base64')
       ),
@@ -134,7 +134,7 @@ describe('BoxedKeyStore', () => {
       }),
     })
 
-    keystore.push({
+    await keystore.push({
       certificate: new X509Certificate(
         Buffer.from(org_90b3d51f30010000_xmlSign_cert, 'base64')
       ),
@@ -158,9 +158,9 @@ describe('BoxedKeyStore', () => {
     expect(db.BoxedKeyStore).toBeDefined()
   })
 
-  test('class', () => {
+  test('class', async () => {
     expect(
-      new db.BoxedKeyStore('1.2.3.4', testLocalDbName, testBackingDbName)
+      await db.BoxedKeyStore.new('1.2.3.4', testLocalDbName, testBackingDbName)
     ).toBeInstanceOf(db.BoxedKeyStore)
   })
 
@@ -168,13 +168,13 @@ describe('BoxedKeyStore', () => {
     await expect(stat(testLocalDbName)).rejects.toMatchObject({
       code: 'ENOENT',
     })
-    new db.BoxedKeyStore('1.2.3.4', testLocalDbName, testBackingDbName)
+    await db.BoxedKeyStore.new('1.2.3.4', testLocalDbName, testBackingDbName)
     await expect(stat(testLocalDbName)).resolves.toMatchObject({ size: 2 })
   })
 
   describe('query', () => {
-    test('cache-miss-backing-hit-serial', () => {
-      const ks = new db.BoxedKeyStore(
+    test('cache-miss-backing-hit-serial', async () => {
+      const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
         testBackingDbName
@@ -195,8 +195,8 @@ describe('BoxedKeyStore', () => {
       })
     })
 
-    test('cache-miss-backing-hit-search', () => {
-      const ks = new db.BoxedKeyStore(
+    test('cache-miss-backing-hit-search', async () => {
+      const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
         testBackingDbName
@@ -220,7 +220,7 @@ describe('BoxedKeyStore', () => {
     })
 
     test('cache-miss-backing-hit-uint8-search', async () => {
-      const ks = new db.BoxedKeyStore(
+      const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
         testBackingDbName
@@ -245,7 +245,7 @@ describe('BoxedKeyStore', () => {
     })
 
     test('cache-miss-backing-miss-serial-private', async () => {
-      const ks = new db.BoxedKeyStore(
+      const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
         testBackingDbName
@@ -271,7 +271,7 @@ describe('BoxedKeyStore', () => {
           })
         )
       )
-      const ks = new db.BoxedKeyStore(
+      const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
         testBackingDbName
@@ -316,7 +316,7 @@ describe('BoxedKeyStore', () => {
         ])
       )
     )
-    const ks = new db.BoxedKeyStore(
+    const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
       testBackingDbName
@@ -369,7 +369,7 @@ describe('BoxedKeyStore', () => {
         ])
       )
     )
-    const ks = new db.BoxedKeyStore(
+    const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
       testBackingDbName
@@ -409,7 +409,7 @@ describe('BoxedKeyStore', () => {
   })
 
   test('cache-miss-backing-miss-search-certificate-organisation', async () => {
-    const ks = new db.BoxedKeyStore(
+    const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
       testBackingDbName
@@ -439,7 +439,7 @@ describe('BoxedKeyStore', () => {
         ])
       )
     )
-    const ks = new db.BoxedKeyStore(
+    const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
       testBackingDbName
@@ -494,7 +494,7 @@ describe('BoxedKeyStore', () => {
         ])
       )
     )
-    const ks = new db.BoxedKeyStore(
+    const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
       testBackingDbName
@@ -530,8 +530,8 @@ describe('BoxedKeyStore', () => {
     )
   })
 
-  test('unsupported-keyUsage', () => {
-    const ks = new db.BoxedKeyStore(
+  test('unsupported-keyUsage', async () => {
+    const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
       testBackingDbName
@@ -546,8 +546,8 @@ describe('BoxedKeyStore', () => {
     ).resolves.toBeNull()
   })
 
-  testIf('nominal', () => {
-    const ks = new db.BoxedKeyStore('1.2.3.4')
+  testIf('nominal', async () => {
+    const ks = await db.BoxedKeyStore.new('1.2.3.4')
     return expect(
       ks.query({
         lookup: 'certificate',
@@ -560,7 +560,7 @@ describe('BoxedKeyStore', () => {
 
   describe('cleanup', () => {
     test('does-not-remove-provided-file', async () => {
-      const ks = new db.BoxedKeyStore(
+      const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
         testBackingDbName
@@ -570,7 +570,7 @@ describe('BoxedKeyStore', () => {
     })
 
     testIf('removes-temporary-file', async () => {
-      const ks = new db.BoxedKeyStore('1.2.3.4')
+      const ks = await db.BoxedKeyStore.new('1.2.3.4')
       expect(typeof ks.temporyFile).toBe('string')
       await expect(stat(ks.temporyFile as string)).resolves.toBeDefined()
       await expect(ks.cleanup()).resolves.toBeUndefined()
