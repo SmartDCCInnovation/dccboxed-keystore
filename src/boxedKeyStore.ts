@@ -38,35 +38,53 @@ import { KeyStoreDB, MaybeList, QueryOptions, queryOptionsHasEUI } from './db'
 export const defaultBackingFile = resolve(__dirname, '..', 'keystore.json')
 
 export class BoxedKeyStore extends KeyStoreDB {
-  private backingDB: KeyStoreDB
-  private _temporyFile?: string
-
   public get temporyFile(): string | undefined {
     return this._temporyFile
   }
 
   /**
-   * create a new caching keystore
+   * Creates a new caching key store
    *
    * @param boxedAddress ip address of a DCC Boxed instance
-   * @param localFile local file to cache updates to
-   * @param backingFile backing readonly database file
+   * @param backingDB backing readonly database
+   * @param localFile local file to cache updates to, if undefined a temporary file is created
+   * @param _temporyFile
    */
-  constructor(
+  protected constructor(
     private boxedAddress: string,
+    private backingDB: KeyStoreDB,
+    localFile: string,
+    private _temporyFile?: string
+  ) {
+    super(localFile)
+  }
+
+  /**
+   * Wrap constructor for async operations.
+   *
+   * @param boxedAddress ip address of a DCC Boxed instance
+   * @param localFile local file to cache updates to, if undefined a temporary file is created
+   * @param backingFile backing readonly database file, if undefined a default backing file is used
+   * @returns
+   */
+  public static async new(
+    boxedAddress: string,
     localFile?: string,
     backingFile?: string
-  ) {
+  ): Promise<BoxedKeyStore> {
     let tmp_flag = false
     if (typeof localFile !== 'string') {
       localFile = tmpNameSync({ postfix: '.json' })
       tmp_flag = true
     }
-    super(localFile)
-    if (tmp_flag) {
-      this._temporyFile = localFile
-    }
-    this.backingDB = new KeyStoreDB(backingFile ?? defaultBackingFile)
+    const instance = new BoxedKeyStore(
+      boxedAddress,
+      await KeyStoreDB.new(backingFile ?? defaultBackingFile),
+      localFile,
+      tmp_flag ? localFile : undefined
+    )
+    await instance.db.load()
+    return instance
   }
 
   public override query(options: {
@@ -158,14 +176,14 @@ export class BoxedKeyStore extends KeyStoreDB {
         const qrs = await search(sr, this.boxedAddress)
         if (qrs.length >= 1) {
           for (const qr of qrs) {
-            super.push({ certificate: qr.x509 })
+            await super.push({ certificate: qr.x509 })
           }
           return qrs.map(({ meta, x509 }) => ({ ...meta, certificate: x509 }))
         }
       } else {
         const r = await query(options.serial.toString(16), this.boxedAddress)
         if (r) {
-          super.push({ certificate: r.x509 })
+          await super.push({ certificate: r.x509 })
           return { ...r.meta, certificate: r.x509 }
         }
       }

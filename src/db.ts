@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { JsonDB } from 'node-json-db'
+import { Config, JsonDB } from 'node-json-db'
 import { createPrivateKey, KeyObject, X509Certificate } from 'node:crypto'
 import {
   buildDeviceCertificateMetadata,
@@ -106,11 +106,22 @@ type _USAGE = 'digitalSignature' | 'keyAgreement'
 export type MaybeList<T> = T | T[]
 
 export class KeyStoreDB {
-  private readonly db: JsonDB
+  protected readonly db: JsonDB
 
-  constructor(filename: string) {
-    this.db = new JsonDB(filename, true, true)
-    this.db.load()
+  protected constructor(filename: string) {
+    this.db = new JsonDB(new Config(filename, true, true))
+  }
+
+  /**
+   * Wrap constructor for async operations.
+   *
+   * @param filename
+   * @returns
+   */
+  public static async new(filename: string): Promise<KeyStoreDB> {
+    const instance = new KeyStoreDB(filename)
+    await instance.db.load()
+    return instance
   }
 
   /**
@@ -193,9 +204,9 @@ export class KeyStoreDB {
     if (queryOptionsHasEUI(options)) {
       let tree: Record<_SERIAL, Entry>
       try {
-        tree = this.db.getData(
+        tree = (await this.db.getData(
           `/${normaliseEUI(options.eui)}/${KeyUsage[options.keyUsage]}`
-        ) as Record<_SERIAL, Entry>
+        )) as Record<_SERIAL, Entry>
       } catch {
         return null
       }
@@ -253,7 +264,7 @@ export class KeyStoreDB {
       }
     } else {
       /* search by serial */
-      const tree = this.db.getData('/') as Record<
+      const tree = (await this.db.getData('/')) as Record<
         _EUI64,
         Record<_USAGE, Record<_SERIAL, Entry>>
       >
@@ -307,7 +318,7 @@ export class KeyStoreDB {
     return null
   }
 
-  public push(options: PushOptions): CertificateMetadata {
+  public async push(options: PushOptions): Promise<CertificateMetadata> {
     let meta: CertificateMetadata
     const certificate: { certificate?: string } = {}
     const privateKey: { privateKey?: string } = {}
@@ -357,7 +368,7 @@ export class KeyStoreDB {
     ) {
       throw new Error('unsupported keyUsage')
     }
-    this.db.push(
+    await this.db.push(
       `/${normaliseEUI(meta.eui)}/${KeyUsage[meta.keyUsage[0]]}/${meta.serial}`,
       entry,
       false
