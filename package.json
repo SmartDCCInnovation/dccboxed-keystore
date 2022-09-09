@@ -1,6 +1,6 @@
 {
   "name": "@smartdcc/dccboxed-keystore",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "description": "DCC Boxed server keystore exposed as json db.",
   "main": "dist/index.js",
   "type": "commonjs",
