@@ -214,7 +214,7 @@ describe('BoxedKeyStore', () => {
           serial: BigInt('105986833131214866166891566273223584671'),
           role: 2,
           keyUsage: [KeyUsage.digitalSignature],
-          privateKey: expect.any(KeyObject),
+          privateKey: expect.any(KeyObject as unknown as jest.Constructor),
         }),
       ])
     })
@@ -238,7 +238,7 @@ describe('BoxedKeyStore', () => {
           serial: BigInt('105986833131214866166891566273223584671'),
           role: 2,
           keyUsage: [KeyUsage.digitalSignature],
-          privateKey: expect.any(KeyObject),
+          privateKey: expect.any(KeyObject as unknown as jest.Constructor),
         }),
       ])
       expect(searchMock).toHaveBeenCalledTimes(0)
