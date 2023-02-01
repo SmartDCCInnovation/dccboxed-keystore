@@ -59,7 +59,7 @@ yargs(hideBin(_argv))
         console.log(`[E] output file ${args.output} already exists`)
         return
       }
-      const db = new KeyStoreDB(args.output)
+      const db = await KeyStoreDB.new(args.output)
       console.log(`[*] server: ${args.boxedAddress}`)
       console.log(`[*] checking for: org-crypto.zip`)
       const result = await got(
@@ -118,45 +118,47 @@ yargs(hideBin(_argv))
       }
 
       const zip = new AdmZip(resultCrypto.body, { readEntries: true })
-      zip.getEntries().forEach((e) => {
-        if (
-          !e.isDirectory &&
-          e.name.endsWith('.pem') &&
-          dirname(e.entryName).search('cert') >= 0
-        ) {
-          console.log(`[*] found: ${e.name}`)
-          const keyFileName = e.entryName
-            .replace(/\/cert\//, '/key/')
-            .replace(/.pem$/, '.key')
-          const keyEntry = zip.getEntry(keyFileName)
-          if (keyEntry === null) {
-            console.log(`[W] could not find ${keyFileName}`)
-            return
+      await Promise.all(
+        zip.getEntries().map(async (e) => {
+          if (
+            !e.isDirectory &&
+            e.name.endsWith('.pem') &&
+            dirname(e.entryName).search('cert') >= 0
+          ) {
+            console.log(`[*] found: ${e.name}`)
+            const keyFileName = e.entryName
+              .replace(/\/cert\//, '/key/')
+              .replace(/.pem$/, '.key')
+            const keyEntry = zip.getEntry(keyFileName)
+            if (keyEntry === null) {
+              console.log(`[W] could not find ${keyFileName}`)
+              return
+            }
+            const certPem = e.getData()
+            const certificate = new X509Certificate(certPem)
+            const privKeyPem = keyEntry.getData()
+            const privKey = createPrivateKey(privKeyPem)
+            if (!certificate.checkPrivateKey(privKey)) {
+              console.log(`[W] failed pub/private key check for ${e.name}`)
+              return
+            }
+            try {
+              const meta = await db.push({
+                certificate,
+                private: privKey,
+                name: e.name.replace(/\.pem$/, ''),
+              })
+              console.log(
+                `[*] stored key pair ${meta.eui.toString()} ${meta.keyUsage.map(
+                  (x) => KeyUsage[x]
+                )}`
+              )
+            } catch (err) {
+              console.log(`[W] bad org cert ${e.name} ${err}`)
+            }
           }
-          const certPem = e.getData()
-          const certificate = new X509Certificate(certPem)
-          const privKeyPem = keyEntry.getData()
-          const privKey = createPrivateKey(privKeyPem)
-          if (!certificate.checkPrivateKey(privKey)) {
-            console.log(`[W] failed pub/private key check for ${e.name}`)
-            return
-          }
-          try {
-            const meta = db.push({
-              certificate,
-              private: privKey,
-              name: e.name.replace(/\.pem$/, ''),
-            })
-            console.log(
-              `[*] stored key pair ${meta.eui.toString()} ${meta.keyUsage.map(
-                (x) => KeyUsage[x]
-              )}`
-            )
-          } catch (err) {
-            console.log(`[W] bad org cert ${e.name} ${err}`)
-          }
-        }
-      })
+        })
+      )
 
       if (Array.isArray(args.serial)) {
         for (const serial of args.serial) {
