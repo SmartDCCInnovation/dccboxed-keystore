@@ -93,7 +93,7 @@ export interface CertificateMetadata {
 }
 
 export function parseOrganisationSubject(
-  subjectRDNs: SEQUENCE<ASN1Element>
+  subjectRDNs: SEQUENCE<ASN1Element>,
 ): Pick<CertificateMetadata, 'eui' | 'role'> {
   let role: number | undefined = undefined
   let eui: string | undefined = undefined
@@ -129,7 +129,7 @@ export function parseOrganisationSubject(
 
 export function extractExtension(
   tbsCertificate: SEQUENCE<ASN1Element>,
-  oid: string
+  oid: string,
 ): Uint8Array | null {
   /* find and then iterate through extensions */
   for (const el of tbsCertificate) {
@@ -159,7 +159,7 @@ export function extractExtension(
  * @returns
  */
 export function parseKeyUsageFromExtensions(
-  tbsCertificate: SEQUENCE<ASN1Element>
+  tbsCertificate: SEQUENCE<ASN1Element>,
 ): KeyUsage[] {
   const keyUsage: KeyUsage[] = []
   const e = extractExtension(tbsCertificate, '2.5.29.15')
@@ -198,7 +198,7 @@ export function assertKeyType(algId: SEQUENCE<ASN1Element>): void {
  * @returns
  */
 export function buildOrgCertificateMetadata(
-  cert: X509Certificate
+  cert: X509Certificate,
 ): CertificateMetadata {
   const root = new BERElement()
   root.fromBytes(cert.raw)
@@ -218,7 +218,7 @@ export function buildOrgCertificateMetadata(
 }
 
 export function parseSubjectAltNameFromExtensions(
-  tbsCertificate: SEQUENCE<ASN1Element>
+  tbsCertificate: SEQUENCE<ASN1Element>,
 ): EUI {
   const e = extractExtension(tbsCertificate, '2.5.29.17')
   if (e === null) {
@@ -252,7 +252,7 @@ export function parseSubjectAltNameFromExtensions(
  * @returns
  */
 export function buildDeviceCertificateMetadata(
-  cert: X509Certificate
+  cert: X509Certificate,
 ): CertificateMetadata {
   const root = new BERElement()
   root.fromBytes(cert.raw)

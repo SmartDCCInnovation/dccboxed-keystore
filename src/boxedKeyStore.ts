@@ -54,7 +54,7 @@ export class BoxedKeyStore extends KeyStoreDB {
     private boxedAddress: string,
     private backingDB: KeyStoreDB,
     localFile: string,
-    private _temporyFile?: string
+    private _temporyFile?: string,
   ) {
     super(localFile)
   }
@@ -70,7 +70,7 @@ export class BoxedKeyStore extends KeyStoreDB {
   public static async new(
     boxedAddress: string,
     localFile?: string,
-    backingFile?: string
+    backingFile?: string,
   ): Promise<BoxedKeyStore> {
     let tmp_flag = false
     if (typeof localFile !== 'string') {
@@ -81,7 +81,7 @@ export class BoxedKeyStore extends KeyStoreDB {
       boxedAddress,
       await KeyStoreDB.new(backingFile ?? defaultBackingFile),
       localFile,
-      tmp_flag ? localFile : undefined
+      tmp_flag ? localFile : undefined,
     )
     await instance.db.load()
     return instance
@@ -118,7 +118,7 @@ export class BoxedKeyStore extends KeyStoreDB {
     | null
   >
   public override query(
-    options: QueryOptions
+    options: QueryOptions,
   ): Promise<MaybeList<
     CertificateMetadata & { name?: string } & (
         | { certificate: X509Certificate }
@@ -127,7 +127,7 @@ export class BoxedKeyStore extends KeyStoreDB {
   > | null>
 
   public override async query(
-    options: QueryOptions
+    options: QueryOptions,
   ): Promise<MaybeList<
     CertificateMetadata & { name?: string } & (
         | { certificate: X509Certificate }
