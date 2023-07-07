@@ -67,7 +67,7 @@ export type PushOptions = { name?: string } & (
 )
 
 function pushOptionsHasCertificate(
-  p: PushOptions
+  p: PushOptions,
 ): p is { name?: string; certificate: X509Certificate; private?: KeyObject } {
   return 'certificate' in p
 }
@@ -185,7 +185,7 @@ export class KeyStoreDB {
    * @returns
    */
   public query(
-    options: QueryOptions
+    options: QueryOptions,
   ): Promise<null | MaybeList<
     CertificateMetadata & { name?: string } & (
         | { certificate: X509Certificate }
@@ -194,7 +194,7 @@ export class KeyStoreDB {
   >>
 
   public async query(
-    options: QueryOptions
+    options: QueryOptions,
   ): Promise<null | MaybeList<
     CertificateMetadata & { name?: string } & (
         | { certificate: X509Certificate }
@@ -205,7 +205,7 @@ export class KeyStoreDB {
       let tree: Record<_SERIAL, Entry>
       try {
         tree = (await this.db.getData(
-          `/${normaliseEUI(options.eui)}/${KeyUsage[options.keyUsage]}`
+          `/${normaliseEUI(options.eui)}/${KeyUsage[options.keyUsage]}`,
         )) as Record<_SERIAL, Entry>
       } catch {
         return null
@@ -371,7 +371,7 @@ export class KeyStoreDB {
     await this.db.push(
       `/${normaliseEUI(meta.eui)}/${KeyUsage[meta.keyUsage[0]]}/${meta.serial}`,
       entry,
-      false
+      false,
     )
     return meta
   }

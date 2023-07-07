@@ -105,7 +105,7 @@ export async function search(
     CertificateUsage: CertificateUsage
     CertificateStatus: CertificateStatus
   },
-  boxedAddress: string
+  boxedAddress: string,
 ): Promise<QueryResult[]> {
   const result = await got(
     `http://${boxedAddress}:8083/services/certificatesearch`,
@@ -120,7 +120,7 @@ export async function search(
         request: 4000,
       },
       throwHttpErrors: false,
-    }
+    },
   )
   const ct = result.headers['content-type']
   if (result.statusCode === 402) {
@@ -171,14 +171,14 @@ export async function search(
   }
 
   const queryResults = await Promise.all(
-    serials.map((serial) => query(serial, boxedAddress))
+    serials.map((serial) => query(serial, boxedAddress)),
   )
   return queryResults.filter((qr) => qr !== null) as QueryResult[]
 }
 
 export async function query(
   serial: string,
-  boxedAddress: string
+  boxedAddress: string,
 ): Promise<QueryResult | null> {
   const result = await got(
     `http://${boxedAddress}:8083/services/retrievecertificate`,
@@ -195,7 +195,7 @@ export async function query(
         request: 4000,
       },
       throwHttpErrors: false,
-    }
+    },
   )
   const ct = result.headers['content-type']
   if (result.statusCode === 402) {
@@ -221,7 +221,7 @@ export async function query(
 
   if (typeof certificateResponse?.CertificateBody === 'string') {
     const x509 = new X509Certificate(
-      `-----BEGIN CERTIFICATE-----\n${certificateResponse?.CertificateBody}\n-----END CERTIFICATE-----`
+      `-----BEGIN CERTIFICATE-----\n${certificateResponse?.CertificateBody}\n-----END CERTIFICATE-----`,
     )
     if (typeof certificateResponse?.CertificateSubjectName === 'string') {
       /* org cert */
