@@ -104,7 +104,7 @@ export function parseOrganisationSubject(
       const type = att.sequence[0].objectIdentifier
       /* organizationUnitName */
       if (type.dotDelimitedNotation === '2.5.4.11') {
-        const hexRole = att.sequence[1].utf8 /* should be a choice */
+        const hexRole = att.sequence[1].utf8String /* should be a choice */
         if (hexRole.match(/^[0-9a-fA-F]{2}$/) !== null) {
           role = parseInt(hexRole, 16)
         }
