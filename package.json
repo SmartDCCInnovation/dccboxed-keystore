@@ -44,7 +44,7 @@
     "@types/jest": "^29.0.0",
     "@types/node": "^20.1.1",
     "@types/tmp": "^0.2.3",
-    "@typescript-eslint/eslint-plugin": "^6.1.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^6.1.0",
     "adm-zip": "^0.5.9",
     "del-cli": "^5.0.0",
