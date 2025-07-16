@@ -40,50 +40,50 @@ describe('normaliseEUI', () => {
 
   test('space-v2', () => {
     expect(cm.normaliseEUI('1\t1\n22      3\t3 44\n55 667  788')).toBe(
-      '1122334455667788'
+      '1122334455667788',
     )
   })
 
   test('uint8', () => {
     expect(cm.normaliseEUI(Buffer.from('A1A2A3A4A5A6A7A8', 'hex'))).toBe(
-      'a1a2a3a4a5a6a7a8'
+      'a1a2a3a4a5a6a7a8',
     )
   })
 
   test('EUI', () => {
     expect(cm.normaliseEUI(new cm.EUI('A1A2A3A4A5A6A7A8'))).toBe(
-      'a1a2a3a4a5a6a7a8'
+      'a1a2a3a4a5a6a7a8',
     )
   })
 
   describe('error', () => {
     test('too-long', () => {
       expect(() => cm.normaliseEUI('A1-A2-A3-A4-A5-A6-A7-A81')).toThrow(
-        'not a valid'
+        'not a valid',
       )
     })
 
     test('too-long-uint8', () => {
       expect(() =>
-        cm.normaliseEUI(Buffer.from('A1A2A3A4A5A6A7A8A9', 'hex'))
+        cm.normaliseEUI(Buffer.from('A1A2A3A4A5A6A7A8A9', 'hex')),
       ).toThrow('not a valid')
     })
 
     test('too-short', () => {
       expect(() => cm.normaliseEUI('A1-A2-A3-A4-A5-A6-A7-A')).toThrow(
-        'not a valid'
+        'not a valid',
       )
     })
 
     test('too-short-uint8', () => {
       expect(() =>
-        cm.normaliseEUI(Buffer.from('A1A2A3A4A5A6A7', 'hex'))
+        cm.normaliseEUI(Buffer.from('A1A2A3A4A5A6A7', 'hex')),
       ).toThrow('not a valid')
     })
 
     test('invalid-chars', () => {
       expect(() => cm.normaliseEUI('A1-A2-A3-A4-A5-A6-A7-G8')).toThrow(
-        'not a valid'
+        'not a valid',
       )
     })
 
@@ -92,9 +92,9 @@ describe('normaliseEUI', () => {
     })
 
     test('undefined', () => {
-      expect(() =>
-        cm.normaliseEUI(undefined as unknown as string)
-      ).toThrowError(TypeError)
+      expect(() => cm.normaliseEUI(undefined as unknown as string)).toThrow(
+        TypeError,
+      )
     })
   })
 })
@@ -122,45 +122,45 @@ describe('EUI', () => {
 
   test('equals-string', () => {
     expect(
-      new cm.EUI('A1A2A3A4A5A6A7A8').equals('a1a2a3a4a5a6a7a8')
+      new cm.EUI('A1A2A3A4A5A6A7A8').equals('a1a2a3a4a5a6a7a8'),
     ).toBeTruthy()
   })
 
   test('equals-buffer', () => {
     expect(
       new cm.EUI('A1A2A3A4A5A6A7A8').equals(
-        Buffer.from('A1A2A3A4A5A6A7A8', 'hex')
-      )
+        Buffer.from('A1A2A3A4A5A6A7A8', 'hex'),
+      ),
     ).toBeTruthy()
   })
 
   test('equals-eui', () => {
     expect(
       new cm.EUI('A1A2A3A4A5A6A7A8').equals(
-        new cm.EUI('A1-A2-A3-A4-A5-A6-A7-A8')
-      )
+        new cm.EUI('A1-A2-A3-A4-A5-A6-A7-A8'),
+      ),
     ).toBeTruthy()
   })
 
   test('not-equals-string', () => {
     expect(
-      new cm.EUI('A1A2A3A4A5A6A7A8').equals('a1a2a3a4a5a6a7a7')
+      new cm.EUI('A1A2A3A4A5A6A7A8').equals('a1a2a3a4a5a6a7a7'),
     ).toBeFalsy()
   })
 
   test('not-equals-buffer', () => {
     expect(
       new cm.EUI('A1A2A3A4A5A6A7A8').equals(
-        Buffer.from('A1A2A3A4A5A6A7A7', 'hex')
-      )
+        Buffer.from('A1A2A3A4A5A6A7A7', 'hex'),
+      ),
     ).toBeFalsy()
   })
 
   test('not-equals-eui', () => {
     expect(
       new cm.EUI('A1A2A3A4A5A6A7A8').equals(
-        new cm.EUI('A1-A2-A3-A4-A5-A6-A7-A7')
-      )
+        new cm.EUI('A1-A2-A3-A4-A5-A6-A7-A7'),
+      ),
     ).toBeFalsy()
   })
 
@@ -179,8 +179,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '303B3118301606035504030C0F47495454455354535550504C494552310B3009060355040B0C02303231123010060355042D03090090B3D51F30010000',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(cm.parseOrganisationSubject(root.sequence)).toMatchObject({
       eui: new cm.EUI('90 B3 D5 1F 30 01 00 00'),
@@ -193,8 +193,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '303B31123010060355042D03090090B3D51F30010000310B3009060355040B0C0230323118301606035504030C0F47495454455354535550504C494552',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(cm.parseOrganisationSubject(root.sequence)).toMatchObject({
       eui: new cm.EUI('90 B3 D5 1F 30 01 00 00'),
@@ -207,8 +207,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '302E3118301606035504030C0F47495454455354535550504C49455231123010060355042D03090090B3D51F30010000',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseOrganisationSubject(root.sequence)).toThrow('invalid')
   })
@@ -218,8 +218,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '30273118301606035504030C0F47495454455354535550504C494552310B3009060355040B0C023032',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseOrganisationSubject(root.sequence)).toThrow('invalid')
   })
@@ -229,8 +229,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '303B3118301606035504030C0F47495454455354535550504C494552310B3009060355040B0C02304831123010060355042D03090090B3D51F30010000',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseOrganisationSubject(root.sequence)).toThrow('invalid')
   })
@@ -240,8 +240,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '303C3118301606035504030C0F47495454455354535550504C494552310C300A060355040B0C0330323231123010060355042D03090090B3D51F30010000',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseOrganisationSubject(root.sequence)).toThrow('invalid')
   })
@@ -251,8 +251,8 @@ describe('parseOrganisationSubject', () => {
     root.fromBytes(
       Buffer.from(
         '303C3118301606035504030C0F47495454455354535550504C494552310B3009060355040B0C02303231133011060355042D030A0090B3D51F30010000ff',
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseOrganisationSubject(root.sequence)).toThrow('invalid')
   })
@@ -274,8 +274,8 @@ describe('parseKeyUsageFromExtensions', () => {
         ff 04 13 30 11 30 0f 06 0d 2a 86 3a 00 01 84 8f \
         b9 0f 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 \
         0a 80 08 4f 56 88 d7 ec 93 3b e2`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(cm.parseKeyUsageFromExtensions([root])).toMatchObject([
       cm.KeyUsage.digitalSignature,
@@ -293,8 +293,8 @@ describe('parseKeyUsageFromExtensions', () => {
         ff 04 13 30 11 30 0f 06 0d 2a 86 3a 00 01 84 8f \
         b9 0f 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 \
         0a 80 08 4f 56 88 d7 ec 93 3b e2`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(cm.parseKeyUsageFromExtensions([root])).toMatchObject([
       cm.KeyUsage.digitalSignature,
@@ -312,8 +312,8 @@ describe('parseKeyUsageFromExtensions', () => {
         ff 04 13 30 11 30 0f 06 0d 2a 86 3a 00 01 84 8f \
         b9 0f 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 \
         0a 80 08 4f 56 88 d7 ec 93 3b e2`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(cm.parseKeyUsageFromExtensions([root])).toMatchObject([
       cm.KeyUsage.keyAgreement,
@@ -330,11 +330,11 @@ describe('parseKeyUsageFromExtensions', () => {
         ff 04 13 30 11 30 0f 06 0d 2a 86 3a 00 01 84 8f \
         b9 0f 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 \
         0a 80 08 4f 56 88 d7 ec 93 3b e2`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseKeyUsageFromExtensions([root])).toThrow(
-      'keyUsage extension not found'
+      'keyUsage extension not found',
     )
   })
 
@@ -348,11 +348,11 @@ describe('parseKeyUsageFromExtensions', () => {
         ff 04 13 30 11 30 0f 06 0d 2a 86 3a 00 01 84 8f \
         b9 0f 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 \
         0a 80 08 4f 56 88 d7 ec 93 3b e2`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseKeyUsageFromExtensions([root])).toThrow(
-      'keyUsage extension not found'
+      'keyUsage extension not found',
     )
   })
 })
@@ -375,8 +375,8 @@ describe('buildOrgCertificateMetadata', () => {
         OgABhI+5DwECAQQwEwYDVR0jBAwwCoAIT1aI1+yTO+IwCgYIKoZIzj0EAwIDSAAw
         RQIgFr/75lBWSxc8gzYM2B2KIo9qDgZml43a49UDQDJxy9cCIQCcncpTfMwNiHEJ
         MBqualHKnx28X5I+HWDdRugWzqYbDA==`,
-        'base64'
-      )
+        'base64',
+      ),
     )
     expect(cm.buildOrgCertificateMetadata(cert)).toMatchObject({
       eui: new cm.EUI('90 B3 D5 1F 30 01 00 00'),
@@ -399,8 +399,8 @@ describe('buildOrgCertificateMetadata', () => {
         l5LRlvS4MB0GA1UdIAEB/wQTMBEwDwYNKoY6AAGEj7kPAQIBBDATBgNVHSMEDDAK
         gAhPVojX7JM74jAKBggqhkjOPQQDAgNIADBFAiEA39CQ51c+r1+oLhqn242f7VEY
         ObV1LVXRAJHyUP3xiiICIF637Dax9BM+UVV9M7WcSe9rvRDpqksdzZKOZbPprdHF`,
-        'base64'
-      )
+        'base64',
+      ),
     )
     expect(cm.buildOrgCertificateMetadata(cert)).toMatchObject({
       eui: new cm.EUI('90 B3 D5 1F 30 01 00 00'),
@@ -423,8 +423,8 @@ describe('buildOrgCertificateMetadata', () => {
         HSABAf8EEjAQMA4GDCqGOgAB7e5AAQIBBDATBgNVHSMEDDAKgAhH1ArzQSkEoDAK
         BggqhkjOPQQDAgNIADBFAiBtih3M74gET/t+qE6aRYvvCQfYGqUK26lzVBFwhaxF
         ywIhAMWtZ3u/bQs4oFbKuXDQreKUFw2W7kRVbOa8NbYFXR92`,
-        'base64'
-      )
+        'base64',
+      ),
     )
     expect(() => cm.buildOrgCertificateMetadata(cert)).toThrow('invalid')
   })
@@ -457,8 +457,8 @@ describe('buildOrgCertificateMetadata', () => {
         mlNQBr1naMf05e++dcmRMK0z6Fjf9+F+MJZK/Wme8BOnR8UPregwq4HVXLuHFbfe
         7LWOL2iY/Bw+Cq2gJd00X9PHhSnbpdGjcBQVSEk5uyXhFvjm8dyO8JPau1aPPqou
         1izP8hIwHQ==`,
-        'base64'
-      )
+        'base64',
+      ),
     )
     expect(() => cm.buildOrgCertificateMetadata(cert)).toThrow('expected ECDSA')
   })
@@ -480,11 +480,11 @@ describe('parseSubjectAltNameFromExtensions', () => {
         ff 04 13 30 11 30 0f 06 0d 2a 86 3a 00 01 84 8f \
         b9 0f 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 \
         0a 80 08 4f 56 88 d7 ec 93 3b e2`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(() => cm.parseSubjectAltNameFromExtensions([root])).toThrow(
-      'extension not found'
+      'extension not found',
     )
   })
 
@@ -514,11 +514,11 @@ describe('parseSubjectAltNameFromExtensions', () => {
         ff 04 12 30 10 30 0e 06 0c 2a 86 3a 00 01 ed ee \
         40 01 02 01 04 30 13 06 03 55 1d 23 04 0c 30 0a \
         80 08 47 d4 0a f3 41 29 04 a0`.replace(/ /g, ''),
-        'hex'
-      )
+        'hex',
+      ),
     )
     expect(cm.parseSubjectAltNameFromExtensions(root.sequence)).toStrictEqual(
-      new cm.EUI('00DB1234567890A4')
+      new cm.EUI('00DB1234567890A4'),
     )
   })
 
@@ -551,11 +551,11 @@ describe('parseSubjectAltNameFromExtensions', () => {
         mlNQBr1naMf05e++dcmRMK0z6Fjf9+F+MJZK/Wme8BOnR8UPregwq4HVXLuHFbfe
         7LWOL2iY/Bw+Cq2gJd00X9PHhSnbpdGjcBQVSEk5uyXhFvjm8dyO8JPau1aPPqou
         1izP8hIwHQ==`,
-        'base64'
-      )
+        'base64',
+      ),
     )
     expect(() =>
-      cm.parseSubjectAltNameFromExtensions(root.sequence[0].sequence)
+      cm.parseSubjectAltNameFromExtensions(root.sequence[0].sequence),
     ).toThrow('hwSerialNum not found')
   })
 })
@@ -578,8 +578,8 @@ describe('buildDeviceCertificateMetadata', () => {
         HSABAf8EEjAQMA4GDCqGOgAB7e5AAQIBBDATBgNVHSMEDDAKgAhH1ArzQSkEoDAK
         BggqhkjOPQQDAgNIADBFAiBtih3M74gET/t+qE6aRYvvCQfYGqUK26lzVBFwhaxF
         ywIhAMWtZ3u/bQs4oFbKuXDQreKUFw2W7kRVbOa8NbYFXR92`,
-        'base64'
-      )
+        'base64',
+      ),
     )
     expect(cm.buildDeviceCertificateMetadata(cert)).toMatchObject({
       eui: new cm.EUI('00DB1234567890A4'),
