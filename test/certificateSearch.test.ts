@@ -174,6 +174,34 @@ describe('query', () => {
     )
   })
 
+  test('certificate-not-found-with-header', async () => {
+    gotMock.mockReturnValue(
+      new Promise<Response<string>>((resolve) => {
+        resolve({
+          statusCode: 402,
+          headers: {},
+        } as Response<string>)
+      }),
+    )
+    await expect(
+      cs.query('1234', '1.2.3.4', { 'X-Authentication': 'Secret' }),
+    ).resolves.toBeNull()
+    expect(gotMock).toHaveBeenCalledTimes(1)
+    expect(gotMock).toHaveBeenCalledWith(
+      'http://1.2.3.4:8083/services/retrievecertificate',
+      expect.objectContaining<OptionsOfTextResponseBody>({
+        body: cs.prepareRequest('CertificateDataRequest', {
+          CertificateSerial: '1234',
+        }),
+        method: 'post',
+        headers: expect.objectContaining({
+          'content-type': 'application/xml',
+          'X-Authentication': 'Secret',
+        }),
+      }),
+    )
+  })
+
   test('invalid-query', async () => {
     gotMock.mockReturnValue(
       new Promise<Response<string>>((resolve) => {
@@ -367,6 +395,37 @@ describe('search', () => {
         body: cs.prepareRequest('CertificateSearchRequest', q.q),
         method: 'post',
         headers: expect.objectContaining({ 'content-type': 'application/xml' }),
+      }),
+    )
+  })
+
+  test('certificate-not-found-with-headers', async () => {
+    gotMock.mockReturnValue(
+      new Promise<Response<string>>((resolve) => {
+        resolve({
+          statusCode: 402,
+          headers: {},
+        } as Response<string>)
+      }),
+    )
+    const q = {
+      q: { CertificateSubjectAltName: '11-22-33-44-55-66-77-88' },
+      CertificateStatus: cs.CertificateStatus['In use'],
+      CertificateUsage: cs.CertificateUsage['Digital Signing'],
+    }
+    await expect(
+      cs.search(q, '1.2.3.4', { 'X-Authentication': 'Secret' }),
+    ).resolves.toStrictEqual([])
+    expect(gotMock).toHaveBeenCalledTimes(1)
+    expect(gotMock).toHaveBeenCalledWith(
+      'http://1.2.3.4:8083/services/certificatesearch',
+      expect.objectContaining<OptionsOfTextResponseBody>({
+        body: cs.prepareRequest('CertificateSearchRequest', q.q),
+        method: 'post',
+        headers: expect.objectContaining({
+          'content-type': 'application/xml',
+          'X-Authentication': 'Secret',
+        }),
       }),
     )
   })

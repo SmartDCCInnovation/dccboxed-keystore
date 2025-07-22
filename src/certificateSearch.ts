@@ -18,7 +18,7 @@
  */
 
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
-import got from 'got'
+import got, { Headers } from 'got'
 import { parse as contentType } from 'content-type'
 import { X509Certificate } from 'crypto'
 import {
@@ -125,12 +125,14 @@ export async function search(
     CertificateStatus: CertificateStatus
   },
   boxedAddress: string,
+  headers?: Headers,
 ): Promise<QueryResult[]> {
+  const req_headers: Headers = { 'content-type': 'application/xml' }
   const result = await got(
     `${parseUrl(boxedAddress)}services/certificatesearch`,
     {
       method: 'post',
-      headers: { 'content-type': 'application/xml' },
+      headers: headers ? Object.assign({}, headers, req_headers) : req_headers,
       searchParams: { apikey: 'u3bg9gt38htd0j2' },
       body: prepareRequest('CertificateSearchRequest', sr.q),
       timeout: {
@@ -198,12 +200,14 @@ export async function search(
 export async function query(
   serial: string,
   boxedAddress: string,
+  headers?: Headers,
 ): Promise<QueryResult | null> {
+  const req_headers: Headers = { 'content-type': 'application/xml' }
   const result = await got(
     `${parseUrl(boxedAddress)}services/retrievecertificate`,
     {
       method: 'post',
-      headers: { 'content-type': 'application/xml' },
+      headers: headers ? Object.assign({}, headers, req_headers) : req_headers,
       searchParams: { apikey: 'u3bg9gt38htd0j2' },
       body: prepareRequest('CertificateDataRequest', {
         CertificateSerial: serial,

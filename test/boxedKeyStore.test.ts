@@ -114,7 +114,7 @@ describe('BoxedKeyStore', () => {
 
     await keystore.push({
       certificate: new X509Certificate(
-        Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
+        Buffer.from(org_90b3d51f30010000_ds_cert, 'base64'),
       ),
       private: createPrivateKey({
         key: Buffer.from(org_90b3d51f30010000_ds_key, 'base64'),
@@ -125,7 +125,7 @@ describe('BoxedKeyStore', () => {
 
     await keystore.push({
       certificate: new X509Certificate(
-        Buffer.from(org_90b3d51f30010000_ka_cert, 'base64')
+        Buffer.from(org_90b3d51f30010000_ka_cert, 'base64'),
       ),
       private: createPrivateKey({
         key: Buffer.from(org_90b3d51f30010000_ka_key, 'base64'),
@@ -136,7 +136,7 @@ describe('BoxedKeyStore', () => {
 
     await keystore.push({
       certificate: new X509Certificate(
-        Buffer.from(org_90b3d51f30010000_xmlSign_cert, 'base64')
+        Buffer.from(org_90b3d51f30010000_xmlSign_cert, 'base64'),
       ),
     })
   })
@@ -160,7 +160,7 @@ describe('BoxedKeyStore', () => {
 
   test('class', async () => {
     expect(
-      await db.BoxedKeyStore.new('1.2.3.4', testLocalDbName, testBackingDbName)
+      await db.BoxedKeyStore.new('1.2.3.4', testLocalDbName, testBackingDbName),
     ).toBeInstanceOf(db.BoxedKeyStore)
   })
 
@@ -177,20 +177,20 @@ describe('BoxedKeyStore', () => {
       const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
-        testBackingDbName
+        testBackingDbName,
       )
       return expect(
         ks.query({
           lookup: 'certificate',
           serial: BigInt('105986833131214866166891566273223584671'),
-        })
+        }),
       ).resolves.toMatchObject({
         eui: new EUI('90b3d51f30010000'),
         serial: BigInt('105986833131214866166891566273223584671'),
         role: 2,
         keyUsage: [KeyUsage.digitalSignature],
         certificate: new X509Certificate(
-          Buffer.from(org_90b3d51f30010000_ds_cert, 'base64')
+          Buffer.from(org_90b3d51f30010000_ds_cert, 'base64'),
         ),
       })
     })
@@ -199,7 +199,7 @@ describe('BoxedKeyStore', () => {
       const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
-        testBackingDbName
+        testBackingDbName,
       )
       return expect(
         ks.query({
@@ -207,7 +207,7 @@ describe('BoxedKeyStore', () => {
           eui: '90-b3-d5-1f-30-01-00-00',
           keyUsage: KeyUsage.digitalSignature,
           role: 2,
-        })
+        }),
       ).resolves.toMatchObject([
         expect.objectContaining({
           eui: new EUI('90b3d51f30010000'),
@@ -223,7 +223,7 @@ describe('BoxedKeyStore', () => {
       const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
-        testBackingDbName
+        testBackingDbName,
       )
       await expect(
         ks.query({
@@ -231,7 +231,7 @@ describe('BoxedKeyStore', () => {
           eui: Buffer.from('90b3d51f30010000', 'hex'),
           keyUsage: KeyUsage.digitalSignature,
           role: 2,
-        })
+        }),
       ).resolves.toMatchObject([
         expect.objectContaining({
           eui: new EUI('90b3d51f30010000'),
@@ -248,33 +248,33 @@ describe('BoxedKeyStore', () => {
       const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
-        testBackingDbName
+        testBackingDbName,
       )
       await expect(
         ks.query({
           lookup: 'privateKey',
           serial: BigInt('9001'),
-        })
+        }),
       ).resolves.toBeNull()
       expect(queryMock).toHaveBeenCalledTimes(0)
     })
 
     test('cache-miss-backing-miss-serial-certificate', async () => {
       const x509 = new X509Certificate(
-        Buffer.from(device_00db1234567890a4_ds_cert, 'base64')
+        Buffer.from(device_00db1234567890a4_ds_cert, 'base64'),
       )
       queryMock.mockReturnValue(
         new Promise((resolves) =>
           resolves({
             meta: buildDeviceCertificateMetadata(x509),
             x509,
-          })
-        )
+          }),
+        ),
       )
       const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
-        testBackingDbName
+        testBackingDbName,
       )
       await expect(stat(testLocalDbName)).resolves.toMatchObject({
         size: 2,
@@ -283,7 +283,7 @@ describe('BoxedKeyStore', () => {
         ks.query({
           lookup: 'certificate',
           serial: BigInt('72119424058103965276745519964518786767'),
-        })
+        }),
       ).resolves.toMatchObject({
         eui: new EUI('00db1234567890a4'),
         serial: BigInt('72119424058103965276745519964518786767'),
@@ -294,7 +294,52 @@ describe('BoxedKeyStore', () => {
       expect(queryMock).toHaveBeenNthCalledWith(
         1,
         '3641B2225809FFBBA81B3E8E320AA6CF'.toLowerCase(),
-        '1.2.3.4'
+        '1.2.3.4',
+        undefined,
+      )
+      await expect(stat(testLocalDbName)).resolves.not.toMatchObject({
+        size: 2,
+      })
+    })
+
+    test('cache-miss-backing-miss-serial-certificate-with-header', async () => {
+      const x509 = new X509Certificate(
+        Buffer.from(device_00db1234567890a4_ds_cert, 'base64'),
+      )
+      queryMock.mockReturnValue(
+        new Promise((resolves) =>
+          resolves({
+            meta: buildDeviceCertificateMetadata(x509),
+            x509,
+          }),
+        ),
+      )
+      const ks = await db.BoxedKeyStore.new(
+        '1.2.3.4',
+        testLocalDbName,
+        testBackingDbName,
+        { 'X-Authenticate': 'SuperSecret' },
+      )
+      await expect(stat(testLocalDbName)).resolves.toMatchObject({
+        size: 2,
+      })
+      await expect(
+        ks.query({
+          lookup: 'certificate',
+          serial: BigInt('72119424058103965276745519964518786767'),
+        }),
+      ).resolves.toMatchObject({
+        eui: new EUI('00db1234567890a4'),
+        serial: BigInt('72119424058103965276745519964518786767'),
+        keyUsage: [KeyUsage.digitalSignature],
+        certificate: x509,
+      })
+      expect(queryMock).toHaveBeenCalledTimes(1)
+      expect(queryMock).toHaveBeenNthCalledWith(
+        1,
+        '3641B2225809FFBBA81B3E8E320AA6CF'.toLowerCase(),
+        '1.2.3.4',
+        { 'X-Authenticate': 'SuperSecret' },
       )
       await expect(stat(testLocalDbName)).resolves.not.toMatchObject({
         size: 2,
@@ -304,7 +349,7 @@ describe('BoxedKeyStore', () => {
 
   test('cache-miss-backing-miss-search-certificate', async () => {
     const x509 = new X509Certificate(
-      Buffer.from(device_00db1234567890a4_ka_cert, 'base64')
+      Buffer.from(device_00db1234567890a4_ka_cert, 'base64'),
     )
     searchMock.mockReturnValue(
       new Promise((resolves) =>
@@ -313,13 +358,13 @@ describe('BoxedKeyStore', () => {
             meta: buildDeviceCertificateMetadata(x509),
             x509,
           },
-        ])
-      )
+        ]),
+      ),
     )
     const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
-      testBackingDbName
+      testBackingDbName,
     )
     await expect(stat(testLocalDbName)).resolves.toMatchObject({
       size: 2,
@@ -329,7 +374,7 @@ describe('BoxedKeyStore', () => {
         lookup: 'certificate',
         eui: '00db1234567890a4',
         keyUsage: KeyUsage.keyAgreement,
-      })
+      }),
     ).resolves.toEqual([
       expect.objectContaining({
         eui: new EUI('00db1234567890a4'),
@@ -348,16 +393,17 @@ describe('BoxedKeyStore', () => {
           CertificateSubjectAltName: '00-db-12-34-56-78-90-a4',
         },
       },
-      '1.2.3.4'
+      '1.2.3.4',
+      undefined,
     )
     await expect(stat(testLocalDbName)).resolves.not.toMatchObject({
       size: 2,
     })
   })
 
-  test('cache-miss-backing-miss-search-certificate-v2', async () => {
+  test('cache-miss-backing-miss-search-certificate-with-header', async () => {
     const x509 = new X509Certificate(
-      Buffer.from(device_00db1234567890a4_ds_cert, 'base64')
+      Buffer.from(device_00db1234567890a4_ka_cert, 'base64'),
     )
     searchMock.mockReturnValue(
       new Promise((resolves) =>
@@ -366,13 +412,68 @@ describe('BoxedKeyStore', () => {
             meta: buildDeviceCertificateMetadata(x509),
             x509,
           },
-        ])
-      )
+        ]),
+      ),
     )
     const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
-      testBackingDbName
+      testBackingDbName,
+      { 'X-Authenticate': 'SuperSecret' },
+    )
+    await expect(stat(testLocalDbName)).resolves.toMatchObject({
+      size: 2,
+    })
+    await expect(
+      ks.query({
+        lookup: 'certificate',
+        eui: '00db1234567890a4',
+        keyUsage: KeyUsage.keyAgreement,
+      }),
+    ).resolves.toEqual([
+      expect.objectContaining({
+        eui: new EUI('00db1234567890a4'),
+        serial: BigInt('98546831674745780667197067843932045670'),
+        keyUsage: [KeyUsage.keyAgreement],
+        certificate: x509,
+      }),
+    ])
+    expect(searchMock).toHaveBeenCalledTimes(1)
+    expect(searchMock).toHaveBeenNthCalledWith(
+      1,
+      {
+        CertificateUsage: CertificateUsage['Key Agreement'],
+        CertificateStatus: CertificateStatus['In use'],
+        q: {
+          CertificateSubjectAltName: '00-db-12-34-56-78-90-a4',
+        },
+      },
+      '1.2.3.4',
+      { 'X-Authenticate': 'SuperSecret' },
+    )
+    await expect(stat(testLocalDbName)).resolves.not.toMatchObject({
+      size: 2,
+    })
+  })
+
+  test('cache-miss-backing-miss-search-certificate-v2', async () => {
+    const x509 = new X509Certificate(
+      Buffer.from(device_00db1234567890a4_ds_cert, 'base64'),
+    )
+    searchMock.mockReturnValue(
+      new Promise((resolves) =>
+        resolves([
+          {
+            meta: buildDeviceCertificateMetadata(x509),
+            x509,
+          },
+        ]),
+      ),
+    )
+    const ks = await db.BoxedKeyStore.new(
+      '1.2.3.4',
+      testLocalDbName,
+      testBackingDbName,
     )
     await expect(stat(testLocalDbName)).resolves.toMatchObject({
       size: 2,
@@ -382,7 +483,7 @@ describe('BoxedKeyStore', () => {
         lookup: 'certificate',
         eui: '00db1234567890a4',
         keyUsage: KeyUsage.digitalSignature,
-      })
+      }),
     ).resolves.toMatchObject([
       expect.objectContaining({
         eui: new EUI('00db1234567890a4'),
@@ -401,7 +502,8 @@ describe('BoxedKeyStore', () => {
           CertificateSubjectAltName: '00-db-12-34-56-78-90-a4',
         },
       },
-      '1.2.3.4'
+      '1.2.3.4',
+      undefined,
     )
     await expect(stat(testLocalDbName)).resolves.not.toMatchObject({
       size: 2,
@@ -412,7 +514,7 @@ describe('BoxedKeyStore', () => {
     const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
-      testBackingDbName
+      testBackingDbName,
     )
     await expect(
       ks.query({
@@ -420,14 +522,14 @@ describe('BoxedKeyStore', () => {
         eui: '00db1234567890a4',
         role: 2,
         keyUsage: KeyUsage.keyAgreement,
-      })
+      }),
     ).resolves.toBeNull()
     expect(queryMock).toHaveBeenCalledTimes(0)
   })
 
   test('cache-hit', async () => {
     const x509 = new X509Certificate(
-      Buffer.from(device_00db1234567890a4_ds_cert, 'base64')
+      Buffer.from(device_00db1234567890a4_ds_cert, 'base64'),
     )
     searchMock.mockReturnValue(
       new Promise((resolves) =>
@@ -436,13 +538,13 @@ describe('BoxedKeyStore', () => {
             meta: buildDeviceCertificateMetadata(x509),
             x509,
           },
-        ])
-      )
+        ]),
+      ),
     )
     const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
-      testBackingDbName
+      testBackingDbName,
     )
     await expect(stat(testLocalDbName)).resolves.toMatchObject({
       size: 2,
@@ -452,7 +554,7 @@ describe('BoxedKeyStore', () => {
         lookup: 'certificate',
         eui: '00db1234567890a4',
         keyUsage: KeyUsage.digitalSignature,
-      })
+      }),
     ).resolves.toBeDefined()
     expect(searchMock).toHaveBeenCalledTimes(1)
     expect(searchMock).toHaveBeenNthCalledWith(
@@ -464,7 +566,8 @@ describe('BoxedKeyStore', () => {
           CertificateSubjectAltName: '00-db-12-34-56-78-90-a4',
         },
       },
-      '1.2.3.4'
+      '1.2.3.4',
+      undefined,
     )
     await expect(stat(testLocalDbName)).resolves.not.toMatchObject({
       size: 2,
@@ -475,14 +578,14 @@ describe('BoxedKeyStore', () => {
         lookup: 'certificate',
         eui: '00db1234567890a4',
         keyUsage: KeyUsage.digitalSignature,
-      })
+      }),
     ).resolves.toBeDefined()
     expect(searchMock).toHaveBeenCalledTimes(0)
   })
 
   test('cache-miss-backing-miss-uint8-search-certificate', async () => {
     const x509 = new X509Certificate(
-      Buffer.from(device_00db1234567890a4_ka_cert, 'base64')
+      Buffer.from(device_00db1234567890a4_ka_cert, 'base64'),
     )
     searchMock.mockReturnValue(
       new Promise((resolves) =>
@@ -491,13 +594,13 @@ describe('BoxedKeyStore', () => {
             meta: buildDeviceCertificateMetadata(x509),
             x509,
           },
-        ])
-      )
+        ]),
+      ),
     )
     const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
-      testBackingDbName
+      testBackingDbName,
     )
     await expect(stat(testLocalDbName)).resolves.toMatchObject({
       size: 2,
@@ -507,7 +610,7 @@ describe('BoxedKeyStore', () => {
         lookup: 'certificate',
         eui: Buffer.from('00db1234567890a4', 'hex'),
         keyUsage: KeyUsage.keyAgreement,
-      })
+      }),
     ).resolves.toEqual([
       expect.objectContaining({
         eui: new EUI('00db1234567890a4'),
@@ -526,7 +629,8 @@ describe('BoxedKeyStore', () => {
           CertificateSubjectAltName: '00-db-12-34-56-78-90-a4',
         },
       },
-      '1.2.3.4'
+      '1.2.3.4',
+      undefined,
     )
   })
 
@@ -534,7 +638,7 @@ describe('BoxedKeyStore', () => {
     const ks = await db.BoxedKeyStore.new(
       '1.2.3.4',
       testLocalDbName,
-      testBackingDbName
+      testBackingDbName,
     )
     return expect(
       ks.query({
@@ -542,7 +646,7 @@ describe('BoxedKeyStore', () => {
         eui: '90-b3-d5-1f-30-01-00-00',
         keyUsage: KeyUsage.decipherOnly,
         role: 2,
-      })
+      }),
     ).resolves.toBeNull()
   })
 
@@ -554,7 +658,7 @@ describe('BoxedKeyStore', () => {
         eui: '90-b3-d5-1f-30-01-00-00',
         keyUsage: KeyUsage.keyAgreement,
         role: 2,
-      })
+      }),
     ).resolves.toBeDefined()
   })
 
@@ -563,7 +667,7 @@ describe('BoxedKeyStore', () => {
       const ks = await db.BoxedKeyStore.new(
         '1.2.3.4',
         testLocalDbName,
-        testBackingDbName
+        testBackingDbName,
       )
       await expect(ks.cleanup()).resolves.toBeUndefined()
       await expect(stat(testLocalDbName)).resolves.toBeDefined()

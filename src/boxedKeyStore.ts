@@ -21,6 +21,7 @@ import { KeyObject, X509Certificate } from 'node:crypto'
 import { rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { tmpNameSync } from 'tmp'
+import { Headers } from 'got'
 import {
   EUI,
   KeyUsage,
@@ -55,6 +56,7 @@ export class BoxedKeyStore extends KeyStoreDB {
     private backingDB: KeyStoreDB,
     localFile: string,
     private _temporyFile?: string,
+    private headers?: Headers,
   ) {
     super(localFile)
   }
@@ -71,6 +73,7 @@ export class BoxedKeyStore extends KeyStoreDB {
     boxedAddress: string,
     localFile?: string,
     backingFile?: string,
+    headers?: Headers,
   ): Promise<BoxedKeyStore> {
     let tmp_flag = false
     if (typeof localFile !== 'string') {
@@ -82,6 +85,7 @@ export class BoxedKeyStore extends KeyStoreDB {
       await KeyStoreDB.new(backingFile ?? defaultBackingFile),
       localFile,
       tmp_flag ? localFile : undefined,
+      headers,
     )
     await instance.db.load()
     return instance
@@ -173,7 +177,7 @@ export class BoxedKeyStore extends KeyStoreDB {
               .replace(/(.{2})(?!$)/g, '$1-'),
           },
         }
-        const qrs = await search(sr, this.boxedAddress)
+        const qrs = await search(sr, this.boxedAddress, this.headers)
         if (qrs.length >= 1) {
           for (const qr of qrs) {
             await super.push({ certificate: qr.x509 })
@@ -181,7 +185,11 @@ export class BoxedKeyStore extends KeyStoreDB {
           return qrs.map(({ meta, x509 }) => ({ ...meta, certificate: x509 }))
         }
       } else {
-        const r = await query(options.serial.toString(16), this.boxedAddress)
+        const r = await query(
+          options.serial.toString(16),
+          this.boxedAddress,
+          this.headers,
+        )
         if (r) {
           await super.push({ certificate: r.x509 })
           return { ...r.meta, certificate: r.x509 }
