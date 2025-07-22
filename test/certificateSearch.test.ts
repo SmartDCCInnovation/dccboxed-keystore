@@ -34,19 +34,19 @@ describe('prepareRequest', () => {
 
   test('basic', () => {
     expect(cs.prepareRequest('hello', { a: 'b' })).toBe(
-      `<?xml version="1.0" encoding="utf-8"?><hello><a>b</a></hello>`
+      `<?xml version="1.0" encoding="utf-8"?><hello><a>b</a></hello>`,
     )
   })
 
   test('nested', () => {
     expect(cs.prepareRequest('hello', { a: 'b', c: { e: 'd' } })).toBe(
-      `<?xml version="1.0" encoding="utf-8"?><hello><a>b</a><c><e>d</e></c></hello>`
+      `<?xml version="1.0" encoding="utf-8"?><hello><a>b</a><c><e>d</e></c></hello>`,
     )
   })
 
   test('array', () => {
     expect(cs.prepareRequest('hello', { a: ['1', '2', '3'] })).toBe(
-      `<?xml version="1.0" encoding="utf-8"?><hello><a>1</a><a>2</a><a>3</a></hello>`
+      `<?xml version="1.0" encoding="utf-8"?><hello><a>1</a><a>2</a><a>3</a></hello>`,
     )
   })
 
@@ -64,7 +64,7 @@ describe('prepareRequest', () => {
       '<?xml version="1.0" encoding="utf-8"?>' +
         '<CertificateSearchRequest>' +
         '<CertificateSubjectName>90-B3-D5-1F-30-01-00-00</CertificateSubjectName>' +
-        '</CertificateSearchRequest>'
+        '</CertificateSearchRequest>',
     )
   })
 })
@@ -158,7 +158,7 @@ describe('query', () => {
           statusCode: 402,
           headers: {},
         } as Response<string>)
-      })
+      }),
     )
     await expect(cs.query('1234', '1.2.3.4')).resolves.toBeNull()
     expect(gotMock).toHaveBeenCalledTimes(1)
@@ -170,7 +170,7 @@ describe('query', () => {
         }),
         method: 'post',
         headers: expect.objectContaining({ 'content-type': 'application/xml' }),
-      })
+      }),
     )
   })
 
@@ -181,10 +181,10 @@ describe('query', () => {
           statusCode: 401,
           headers: {},
         } as Response<string>)
-      })
+      }),
     )
     await expect(cs.query('1234', '1.2.3.4')).rejects.toThrow(
-      'invalid search parameters'
+      'invalid search parameters',
     )
     expect(gotMock).toHaveBeenCalledTimes(1)
   })
@@ -196,7 +196,7 @@ describe('query', () => {
           statusCode: 404,
           headers: {},
         } as Response<string>)
-      })
+      }),
     )
     await expect(cs.query('1234', '1.2.3.4')).rejects.toThrow('unknown error')
     expect(gotMock).toHaveBeenCalledTimes(1)
@@ -210,7 +210,7 @@ describe('query', () => {
           headers: { 'content-type': 'text/plain' },
           body: '<html></html>',
         } as Response<string>)
-      })
+      }),
     )
     await expect(cs.query('1234', '1.2.3.4')).rejects.toThrow('unknown error')
     expect(gotMock).toHaveBeenCalledTimes(1)
@@ -239,13 +239,13 @@ describe('query', () => {
               </CertificateResponse>
             </CertificateDataResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     const x509 = new X509Certificate(
-      Buffer.from(orgCert_90b3d51f30000001_ds, 'base64')
+      Buffer.from(orgCert_90b3d51f30000001_ds, 'base64'),
     )
     await expect(
-      cs.query('469AFEC2E7C0CAAEC8A400769B702BC8', '1.2.3.4')
+      cs.query('469AFEC2E7C0CAAEC8A400769B702BC8', '1.2.3.4'),
     ).resolves.toMatchObject({
       meta: buildOrgCertificateMetadata(x509),
       x509,
@@ -260,7 +260,7 @@ describe('query', () => {
         }),
         method: 'post',
         headers: { 'content-type': 'application/xml' },
-      })
+      }),
     )
   })
 
@@ -286,13 +286,13 @@ describe('query', () => {
               </CertificateResponse>
             </CertificateDataResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     const x509 = new X509Certificate(
-      Buffer.from(deviceCert_88738457002f966c_ds, 'base64')
+      Buffer.from(deviceCert_88738457002f966c_ds, 'base64'),
     )
     await expect(
-      cs.query('4DF56E92D528F83544EBA0547068CF8C', '1.2.3.4')
+      cs.query('4DF56E92D528F83544EBA0547068CF8C', '1.2.3.4'),
     ).resolves.toMatchObject({
       meta: buildDeviceCertificateMetadata(x509),
       x509,
@@ -307,7 +307,7 @@ describe('query', () => {
         }),
         method: 'post',
         headers: { 'content-type': 'application/xml' },
-      })
+      }),
     )
   })
 
@@ -333,7 +333,7 @@ describe('query', () => {
               </CertificateResponse>
             </CertificateDataResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     await expect(cs.query('54321', '1.2.3.4')).resolves.toBeNull()
     expect(gotMock).toHaveBeenCalledTimes(1)
@@ -352,7 +352,7 @@ describe('search', () => {
           statusCode: 402,
           headers: {},
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: { CertificateSubjectAltName: '11-22-33-44-55-66-77-88' },
@@ -367,7 +367,7 @@ describe('search', () => {
         body: cs.prepareRequest('CertificateSearchRequest', q.q),
         method: 'post',
         headers: expect.objectContaining({ 'content-type': 'application/xml' }),
-      })
+      }),
     )
   })
 
@@ -378,7 +378,7 @@ describe('search', () => {
           statusCode: 401,
           headers: {},
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: { CertificateSubjectAltName: '11-22-33-44-55-66-77-88' },
@@ -386,7 +386,7 @@ describe('search', () => {
       CertificateUsage: cs.CertificateUsage['Digital Signing'],
     }
     await expect(cs.search(q, '1.2.3.4')).rejects.toThrow(
-      'invalid search parameters'
+      'invalid search parameters',
     )
     expect(gotMock).toHaveBeenCalledTimes(1)
   })
@@ -398,7 +398,7 @@ describe('search', () => {
           statusCode: 404,
           headers: {},
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: { CertificateSubjectAltName: '11-22-33-44-55-66-77-88' },
@@ -417,7 +417,7 @@ describe('search', () => {
           headers: { 'content-type': 'text/plain' },
           body: '<html></html>',
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: { CertificateSubjectAltName: '11-22-33-44-55-66-77-88' },
@@ -442,7 +442,7 @@ describe('search', () => {
             <AuditReference>1234567890-abc123456</AuditReference>
           </CertificateSearchResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: {
@@ -476,7 +476,7 @@ describe('search', () => {
             </Result>
           </CertificateSearchResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: {
@@ -491,7 +491,7 @@ describe('search', () => {
       expect.any(String),
       expect.objectContaining({
         body: cs.prepareRequest('CertificateSearchRequest', q.q),
-      })
+      }),
     )
   })
 
@@ -516,7 +516,7 @@ describe('search', () => {
             </Result>
           </CertificateSearchResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: {
@@ -531,7 +531,7 @@ describe('search', () => {
       expect.any(String),
       expect.objectContaining({
         body: cs.prepareRequest('CertificateSearchRequest', q.q),
-      })
+      }),
     )
   })
 
@@ -565,7 +565,7 @@ describe('search', () => {
             </Result>
           </CertificateSearchResponse>`,
         } as Response<string>)
-      })
+      }),
     )
     const q = {
       q: {
@@ -581,7 +581,7 @@ describe('search', () => {
       expect.any(String),
       expect.objectContaining({
         body: cs.prepareRequest('CertificateSearchRequest', q.q),
-      })
+      }),
     )
   })
 
@@ -649,7 +649,7 @@ describe('search', () => {
       CertificateUsage: cs.CertificateUsage['Key Agreement'],
     }
     const x509 = new X509Certificate(
-      Buffer.from(deviceCert_88738457002f966c_ka, 'base64')
+      Buffer.from(deviceCert_88738457002f966c_ka, 'base64'),
     )
     await expect(cs.search(q, '1.2.3.4')).resolves.toMatchObject([
       {
@@ -667,7 +667,7 @@ describe('search', () => {
         }),
         method: 'post',
         headers: { 'content-type': 'application/xml' },
-      })
+      }),
     )
     expect(gotMock).toHaveBeenNthCalledWith(
       2,
@@ -678,7 +678,7 @@ describe('search', () => {
         }),
         method: 'post',
         headers: { 'content-type': 'application/xml' },
-      })
+      }),
     )
   })
 
@@ -746,7 +746,7 @@ describe('search', () => {
       CertificateUsage: cs.CertificateUsage['Digital Signing'],
     }
     const x509 = new X509Certificate(
-      Buffer.from(deviceCert_88738457002f966c_ds, 'base64')
+      Buffer.from(deviceCert_88738457002f966c_ds, 'base64'),
     )
     await expect(cs.search(q, '1.2.3.4')).resolves.toMatchObject([
       {
@@ -764,7 +764,7 @@ describe('search', () => {
         }),
         method: 'post',
         headers: { 'content-type': 'application/xml' },
-      })
+      }),
     )
     expect(gotMock).toHaveBeenNthCalledWith(
       2,
@@ -775,7 +775,7 @@ describe('search', () => {
         }),
         method: 'post',
         headers: { 'content-type': 'application/xml' },
-      })
+      }),
     )
   })
 
@@ -897,10 +897,10 @@ describe('search', () => {
       CertificateRole: cs.CertificateRole.Supplier,
     }
     const x509_1 = new X509Certificate(
-      Buffer.from(orgCert_90b3d51f30010000_ds, 'base64')
+      Buffer.from(orgCert_90b3d51f30010000_ds, 'base64'),
     )
     const x509_2 = new X509Certificate(
-      Buffer.from(orgCert_90b3d51f30010000_ds_b, 'base64')
+      Buffer.from(orgCert_90b3d51f30010000_ds_b, 'base64'),
     )
     await expect(cs.search(q, '1.2.3.4')).resolves.toMatchObject(
       expect.arrayContaining([
@@ -912,7 +912,7 @@ describe('search', () => {
           meta: buildOrgCertificateMetadata(x509_2),
           x509: x509_2,
         },
-      ])
+      ]),
     )
     expect(gotMock).toHaveBeenCalledTimes(3)
     expect(gotMock).toHaveBeenNthCalledWith(
@@ -922,7 +922,7 @@ describe('search', () => {
         body: cs.prepareRequest('CertificateDataRequest', {
           CertificateSerial: '4FBC525201A1D7586C1BC1C4734DEB9F',
         }),
-      })
+      }),
     )
     expect(gotMock).toHaveBeenNthCalledWith(
       3,
@@ -931,7 +931,7 @@ describe('search', () => {
         body: cs.prepareRequest('CertificateDataRequest', {
           CertificateSerial: '4A07BC01D9253B51FAF01F7EC7DA5B2F',
         }),
-      })
+      }),
     )
   })
 
@@ -1043,7 +1043,7 @@ describe('search', () => {
       CertificateRole: cs.CertificateRole.XmlSign,
     }
     const x509 = new X509Certificate(
-      Buffer.from(orgCert_90b3d51f30010000_ds_xmlSign, 'base64')
+      Buffer.from(orgCert_90b3d51f30010000_ds_xmlSign, 'base64'),
     )
     await expect(cs.search(q, '1.2.3.4')).resolves.toMatchObject([
       {
@@ -1059,7 +1059,69 @@ describe('search', () => {
         body: cs.prepareRequest('CertificateDataRequest', {
           CertificateSerial: '14BE4AD2EA1D0E4EC7F7156BD24624A7',
         }),
-      })
+      }),
     )
+  })
+})
+
+describe('parseUrl', () => {
+  test('defined', () => {
+    expect(cs.parseUrl).toBeDefined()
+  })
+
+  describe('minimal', () => {
+    test('hostname', () => {
+      expect(cs.parseUrl('hello')).toBe('http://hello:8083/')
+    })
+
+    test('ipaddress', () => {
+      expect(cs.parseUrl('1.2.3.4')).toBe('http://1.2.3.4:8083/')
+    })
+  })
+
+  describe('port', () => {
+    test('hostname', () => {
+      expect(cs.parseUrl('hello:999')).toBe('http://hello:999/')
+    })
+
+    test('ipaddress', () => {
+      expect(cs.parseUrl('1.2.3.4:999')).toBe('http://1.2.3.4:999/')
+    })
+
+    test('defaultport', () => {
+      expect(cs.parseUrl('hello:80')).toBe('http://hello/')
+    })
+
+    test('trailingslash', () => {
+      expect(cs.parseUrl('hello:80/')).toBe('http://hello/')
+    })
+  })
+
+  describe('https', () => {
+    test('hostname', () => {
+      expect(cs.parseUrl('https://hello')).toBe('https://hello/')
+    })
+
+    test('ipaddress', () => {
+      expect(cs.parseUrl('https://1.2.3.4')).toBe('https://1.2.3.4/')
+    })
+
+    test('trailingslash', () => {
+      expect(cs.parseUrl('https://hello/')).toBe('https://hello/')
+    })
+
+    describe('port', () => {
+      test('hostname', () => {
+        expect(cs.parseUrl('https://hello:999')).toBe('https://hello:999/')
+      })
+
+      test('ipaddress', () => {
+        expect(cs.parseUrl('https://1.2.3.4:999')).toBe('https://1.2.3.4:999/')
+      })
+
+      test('defaultport', () => {
+        expect(cs.parseUrl('https://hello:443')).toBe('https://hello/')
+      })
+    })
   })
 })
