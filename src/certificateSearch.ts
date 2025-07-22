@@ -86,6 +86,25 @@ export type QueryResult = {
 }
 
 /**
+ * Parses a URL-like string and returns a properly formatted URL string
+ *
+ * @param url_like - String that may be a partial or complete URL
+ * @returns Properly formatted URL string with protocol and port if needed
+ *
+ * If the input string:
+ * - Does not contain a colon: Prepends 'http://' and appends port 8083
+ * - Does not contain protocol: Prepends 'http://'
+ * - Is already a complete URL: Returns as-is after URL validation
+ */
+export function parseUrl(url_like: string): string {
+  if (!url_like.includes(':')) {
+    return `http://${url_like}:8083/`
+  }
+  const fullUrl = url_like.includes('://') ? url_like : `http://${url_like}`
+  return new URL(fullUrl).toString()
+}
+
+/**
  * queries the SMKI certificatesearch service. when entering the
  * CertificateSubjectName or CertificateSubjectAltName parameters, ensure they
  * follow the <code>a1-a2-a3-a4-a5-a6-a7-a8</code> format.
@@ -108,7 +127,7 @@ export async function search(
   boxedAddress: string,
 ): Promise<QueryResult[]> {
   const result = await got(
-    `http://${boxedAddress}:8083/services/certificatesearch`,
+    `${parseUrl(boxedAddress)}services/certificatesearch`,
     {
       method: 'post',
       headers: { 'content-type': 'application/xml' },
@@ -181,7 +200,7 @@ export async function query(
   boxedAddress: string,
 ): Promise<QueryResult | null> {
   const result = await got(
-    `http://${boxedAddress}:8083/services/retrievecertificate`,
+    `${parseUrl(boxedAddress)}services/retrievecertificate`,
     {
       method: 'post',
       headers: { 'content-type': 'application/xml' },
