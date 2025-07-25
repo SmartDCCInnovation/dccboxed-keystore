@@ -1123,6 +1123,89 @@ describe('search', () => {
   })
 })
 
+describe('resolveHeaders', () => {
+  test('defined', () => {
+    expect(cs.resolveHeaders).toBeDefined()
+  })
+
+  test('empty headers', async () => {
+    await expect(cs.resolveHeaders()).resolves.toEqual({})
+  })
+
+  test('string values', async () => {
+    const headers = {
+      'content-type': 'application/json',
+      'authorization': 'Bearer token123'
+    }
+    await expect(cs.resolveHeaders(headers)).resolves.toEqual({
+      'content-type': 'application/json',
+      'authorization': 'Bearer token123'
+    })
+  })
+
+  test('sync function values', async () => {
+    const headers = {
+      'x-timestamp': () => '2023-01-01',
+      'x-random': () => 'abc123'
+    }
+    await expect(cs.resolveHeaders(headers)).resolves.toEqual({
+      'x-timestamp': '2023-01-01',
+      'x-random': 'abc123'
+    })
+  })
+
+  test('async function values', async () => {
+    const headers = {
+      'x-async': async () => 'async-value',
+      'x-promise': () => Promise.resolve('promise-value')
+    }
+    await expect(cs.resolveHeaders(headers)).resolves.toEqual({
+      'x-async': 'async-value',
+      'x-promise': 'promise-value'
+    })
+  })
+
+  test('mixed value types', async () => {
+    const headers = {
+      'static': 'static-value',
+      'sync-func': () => 'sync-value',
+      'async-func': async () => 'async-value'
+    }
+    await expect(cs.resolveHeaders(headers)).resolves.toEqual({
+      'static': 'static-value',
+      'sync-func': 'sync-value',
+      'async-func': 'async-value'
+    })
+  })
+
+  test('merge with existing gotHeaders', async () => {
+    const headers = {
+      'x-custom': 'custom-value'
+    }
+    const gotHeaders = {
+      'content-type': 'application/xml',
+      'user-agent': 'test-agent'
+    }
+    await expect(cs.resolveHeaders(headers, gotHeaders)).resolves.toEqual({
+      'content-type': 'application/xml',
+      'user-agent': 'test-agent',
+      'x-custom': 'custom-value'
+    })
+  })
+
+  test('override existing gotHeaders', async () => {
+    const headers = {
+      'content-type': () => 'application/json'
+    }
+    const gotHeaders = {
+      'content-type': 'application/xml'
+    }
+    await expect(cs.resolveHeaders(headers, gotHeaders)).resolves.toEqual({
+      'content-type': 'application/json'
+    })
+  })
+})
+
 describe('parseUrl', () => {
   test('defined', () => {
     expect(cs.parseUrl).toBeDefined()

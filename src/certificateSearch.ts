@@ -18,7 +18,7 @@
  */
 
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
-import got, { Headers } from 'got'
+import got, { Headers as GotHeaders } from 'got'
 import { parse as contentType } from 'content-type'
 import { X509Certificate } from 'crypto'
 import {
@@ -105,6 +105,54 @@ export function parseUrl(url_like: string): string {
 }
 
 /**
+ * Type definition for HTTP headers that can contain:
+ * - Static string values
+ * - Functions that return string values synchronously
+ * - Functions that return string values asynchronously via Promise
+ *
+ * @example
+ * const headers: Headers = {
+ *   'content-type': 'application/json',
+ *   'authorization': () => 'Bearer ' + getToken(),
+ *   'x-custom-header': async () => await fetchHeaderValue()
+ * }
+ */
+export type Headers = Record<
+  string,
+  string | (() => string) | (() => Promise<string>)
+>
+
+/**
+ * Resolves a Headers object into a GotHeaders object by evaluating any function values
+ * and resolving any promises.
+ *
+ * @param headers - The Headers object containing string values, functions or promises
+ * @param gotHeaders - Optional existing GotHeaders object to merge with
+ * @returns Promise resolving to a GotHeaders object with all string values
+ */
+export async function resolveHeaders(
+  headers: Headers = {},
+  gotHeaders: GotHeaders = {},
+): Promise<GotHeaders> {
+  const resolvedHeaders: GotHeaders = { ...gotHeaders }
+
+  for (const [key, value] of Object.entries(headers)) {
+    if (typeof value === 'function') {
+      const result = value()
+      if (result instanceof Promise) {
+        resolvedHeaders[key] = await result
+      } else {
+        resolvedHeaders[key] = result
+      }
+    } else {
+      resolvedHeaders[key] = value
+    }
+  }
+
+  return resolvedHeaders
+}
+
+/**
  * queries the SMKI certificatesearch service. when entering the
  * CertificateSubjectName or CertificateSubjectAltName parameters, ensure they
  * follow the <code>a1-a2-a3-a4-a5-a6-a7-a8</code> format.
@@ -127,12 +175,13 @@ export async function search(
   boxedAddress: string,
   headers?: Headers,
 ): Promise<QueryResult[]> {
-  const req_headers: Headers = { 'content-type': 'application/xml' }
   const result = await got(
     `${parseUrl(boxedAddress)}services/certificatesearch`,
     {
       method: 'post',
-      headers: headers ? Object.assign({}, headers, req_headers) : req_headers,
+      headers: await resolveHeaders(headers, {
+        'content-type': 'application/xml',
+      }),
       searchParams: { apikey: 'u3bg9gt38htd0j2' },
       body: prepareRequest('CertificateSearchRequest', sr.q),
       timeout: {
@@ -202,12 +251,13 @@ export async function query(
   boxedAddress: string,
   headers?: Headers,
 ): Promise<QueryResult | null> {
-  const req_headers: Headers = { 'content-type': 'application/xml' }
   const result = await got(
     `${parseUrl(boxedAddress)}services/retrievecertificate`,
     {
       method: 'post',
-      headers: headers ? Object.assign({}, headers, req_headers) : req_headers,
+      headers: await resolveHeaders(headers, {
+        'content-type': 'application/xml',
+      }),
       searchParams: { apikey: 'u3bg9gt38htd0j2' },
       body: prepareRequest('CertificateDataRequest', {
         CertificateSerial: serial,

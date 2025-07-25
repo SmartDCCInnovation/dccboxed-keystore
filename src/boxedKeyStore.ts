@@ -21,7 +21,6 @@ import { KeyObject, X509Certificate } from 'node:crypto'
 import { rm } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { tmpNameSync } from 'tmp'
-import { Headers } from 'got'
 import {
   EUI,
   KeyUsage,
@@ -31,6 +30,7 @@ import {
 import {
   CertificateStatus,
   CertificateUsage,
+  Headers,
   query,
   search,
 } from './certificateSearch'
