@@ -196,11 +196,37 @@ If persistence of the local cache is required between program runs then the
 class should be instantiated as follows:
 
 ```typescript
-const keyStore = BoxedKeyStore.new(boxedIpAddress, localCacheFile)
+const keyStore = await BoxedKeyStore.new(boxedIpAddress, localCacheFile)
 ```
 
-If the `localCacheFile` is omitted, a temporary file is crated in the system temp
+If the `localCacheFile` is omitted, a temporary file is created in the system temp
 folder.
+
+#### Using Headers with BoxedKeyStore
+
+The `BoxedKeyStore` can be configured with custom headers for SMKI requests:
+
+```typescript
+import { BoxedKeyStore, KeyUsage } from '@smartdcc/dccboxed-keystore'
+
+// Headers can be static values, sync functions, or async functions
+const headers = {
+  'X-Authentication': 'Bearer token123',
+  'X-Timestamp': () => Date.now().toString(),
+  'X-Dynamic-Token': async () => await fetchToken()
+}
+
+const keyStore = await BoxedKeyStore.new('1.2.3.4', undefined, undefined, headers)
+
+// Headers will be automatically used for any SMKI queries
+const result = await keyStore.query({
+  eui: '00-db-12-34-56-78-90-a4',
+  keyUsage: KeyUsage.keyAgreement,
+  lookup: 'certificate'
+})
+
+await keyStore.cleanup()
+```
 
 ### Advanced Usage
 
