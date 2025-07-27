@@ -26,4 +26,5 @@ export {
   KeyUsage,
   normaliseEUI,
 } from './certificateMetadata'
+export { resolveHeaders, Headers } from './certificateSearch'
 export { QueryOptions, PushOptions } from './db'

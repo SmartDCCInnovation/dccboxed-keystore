@@ -241,7 +241,7 @@ export async function search(
   }
 
   const queryResults = await Promise.all(
-    serials.map((serial) => query(serial, boxedAddress)),
+    serials.map((serial) => query(serial, boxedAddress, headers)),
   )
   return queryResults.filter((qr) => qr !== null) as QueryResult[]
 }
