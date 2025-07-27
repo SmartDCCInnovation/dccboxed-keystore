@@ -741,6 +741,221 @@ describe('search', () => {
     )
   })
 
+  test('nominal-device-keyagreement-with-headers', async () => {
+    gotMock.mockImplementation((x) => {
+      if (x.endsWith('certificatesearch')) {
+        return new Promise<Response<string>>((resolve) => {
+          resolve({
+            statusCode: 200,
+            headers: { 'content-type': 'application/xml; charset=utf-8' },
+            body: `
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <CertificateSearchResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <Result>
+                <CertificateSerial>4DF56E92D528F83544EBA0547068CF8C</CertificateSerial>
+                <CertificateSubjectAltName>88-73-84-57-00-2F-96-6C</CertificateSubjectAltName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateUsage>DS</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+                <CertificateSerial>13E6E3409C880FDBE71A429ACF375746</CertificateSerial>
+                <CertificateSubjectAltName>88-73-84-57-00-2F-96-6C</CertificateSubjectAltName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateUsage>KA</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+            </CertificateSearchResponse>`,
+          } as Response<string>)
+        })
+      } else {
+        return new Promise<Response<string>>((resolve) => {
+          resolve({
+            statusCode: 200,
+            headers: { 'content-type': 'application/xml; charset=utf-8' },
+            body: `
+            <?xml version="1.0" encoding="utf-8"?>
+            <CertificateDataResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <CertificateResponse>
+              <CertificateSubjectAltName>88-73-84-57-00-2F-96-6C</CertificateAltName>
+              <CertificateSerial>13E6E3409C880FDBE71A429ACF375746</CertificateSerial>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateBody>
+                ${deviceCert_88738457002f966c_ka}
+              </CertificateBody>
+              <CertificateUsage>KA</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+              </CertificateResponse>
+            </CertificateDataResponse>`,
+          } as Response<string>)
+        })
+      }
+    })
+    const q = {
+      q: {
+        CertificateSubjectAltName: '88-73-84-57-00-2F-96-6C',
+      },
+      CertificateStatus: cs.CertificateStatus['In use'],
+      CertificateUsage: cs.CertificateUsage['Key Agreement'],
+    }
+    const x509 = new X509Certificate(
+      Buffer.from(deviceCert_88738457002f966c_ka, 'base64'),
+    )
+    await expect(
+      cs.search(q, '1.2.3.4', { 'X-Authenticate': 'Secret123' }),
+    ).resolves.toMatchObject([
+      {
+        meta: buildDeviceCertificateMetadata(x509),
+        x509,
+      },
+    ])
+    expect(gotMock).toHaveBeenCalledTimes(2)
+    expect(gotMock).toHaveBeenNthCalledWith(
+      1,
+      'http://1.2.3.4:8083/services/certificatesearch',
+      expect.objectContaining({
+        body: cs.prepareRequest('CertificateSearchRequest', {
+          CertificateSubjectAltName: '88-73-84-57-00-2F-96-6C',
+        }),
+        method: 'post',
+        headers: {
+          'content-type': 'application/xml',
+          'X-Authenticate': 'Secret123',
+        },
+      }),
+    )
+    expect(gotMock).toHaveBeenNthCalledWith(
+      2,
+      'http://1.2.3.4:8083/services/retrievecertificate',
+      expect.objectContaining({
+        body: cs.prepareRequest('CertificateDataRequest', {
+          CertificateSerial: '13E6E3409C880FDBE71A429ACF375746',
+        }),
+        method: 'post',
+        headers: {
+          'content-type': 'application/xml',
+          'X-Authenticate': 'Secret123',
+        },
+      }),
+    )
+  })
+
+  test('nominal-device-keyagreement-with-async-headers', async () => {
+    gotMock.mockImplementation((x) => {
+      if (x.endsWith('certificatesearch')) {
+        return new Promise<Response<string>>((resolve) => {
+          resolve({
+            statusCode: 200,
+            headers: { 'content-type': 'application/xml; charset=utf-8' },
+            body: `
+            <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+            <CertificateSearchResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <Result>
+                <CertificateSerial>4DF56E92D528F83544EBA0547068CF8C</CertificateSerial>
+                <CertificateSubjectAltName>88-73-84-57-00-2F-96-6C</CertificateSubjectAltName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateUsage>DS</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+              <Result>
+                <CertificateSerial>13E6E3409C880FDBE71A429ACF375746</CertificateSerial>
+                <CertificateSubjectAltName>88-73-84-57-00-2F-96-6C</CertificateSubjectAltName>
+                <CertificateStatus>I</CertificateStatus>
+                <CertificateUsage>KA</CertificateUsage>
+                <ManufacturingFlag>false</ManufacturingFlag>
+              </Result>
+            </CertificateSearchResponse>`,
+          } as Response<string>)
+        })
+      } else {
+        return new Promise<Response<string>>((resolve) => {
+          resolve({
+            statusCode: 200,
+            headers: { 'content-type': 'application/xml; charset=utf-8' },
+            body: `
+            <?xml version="1.0" encoding="utf-8"?>
+            <CertificateDataResponse>
+              <ResponseCode>200</ResponseCode>
+              <ResponseMessage>Success</ResponseMessage>
+              <AuditReference>1234567890-abc123456</AuditReference>
+              <CertificateResponse>
+              <CertificateSubjectAltName>88-73-84-57-00-2F-96-6C</CertificateAltName>
+              <CertificateSerial>13E6E3409C880FDBE71A429ACF375746</CertificateSerial>
+              <CertificateStatus>I</CertificateStatus>
+              <CertificateBody>
+                ${deviceCert_88738457002f966c_ka}
+              </CertificateBody>
+              <CertificateUsage>KA</CertificateUsage>
+              <ManufacturingFlag>false</ManufacturingFlag>
+              </CertificateResponse>
+            </CertificateDataResponse>`,
+          } as Response<string>)
+        })
+      }
+    })
+    const q = {
+      q: {
+        CertificateSubjectAltName: '88-73-84-57-00-2F-96-6C',
+      },
+      CertificateStatus: cs.CertificateStatus['In use'],
+      CertificateUsage: cs.CertificateUsage['Key Agreement'],
+    }
+    const x509 = new X509Certificate(
+      Buffer.from(deviceCert_88738457002f966c_ka, 'base64'),
+    )
+    let headerSecretsIndex = 0
+    let headerSecrets = ['SuperSecretToken', 'EvenMoreSecretToken']
+    await expect(
+      cs.search(q, '1.2.3.4', {
+        'X-Authenticate': () =>
+          Promise.resolve<string>(headerSecrets[headerSecretsIndex++]),
+      }),
+    ).resolves.toMatchObject([
+      {
+        meta: buildDeviceCertificateMetadata(x509),
+        x509,
+      },
+    ])
+    expect(gotMock).toHaveBeenCalledTimes(2)
+    expect(gotMock).toHaveBeenNthCalledWith(
+      1,
+      'http://1.2.3.4:8083/services/certificatesearch',
+      expect.objectContaining({
+        body: cs.prepareRequest('CertificateSearchRequest', {
+          CertificateSubjectAltName: '88-73-84-57-00-2F-96-6C',
+        }),
+        method: 'post',
+        headers: {
+          'content-type': 'application/xml',
+          'X-Authenticate': 'SuperSecretToken',
+        },
+      }),
+    )
+    expect(gotMock).toHaveBeenNthCalledWith(
+      2,
+      'http://1.2.3.4:8083/services/retrievecertificate',
+      expect.objectContaining({
+        body: cs.prepareRequest('CertificateDataRequest', {
+          CertificateSerial: '13E6E3409C880FDBE71A429ACF375746',
+        }),
+        method: 'post',
+        headers: {
+          'content-type': 'application/xml',
+          'X-Authenticate': 'EvenMoreSecretToken',
+        },
+      }),
+    )
+  })
+
   test('nominal-device-digitalsignature', async () => {
     gotMock.mockImplementation((x) => {
       if (x.endsWith('certificatesearch')) {
@@ -1135,73 +1350,73 @@ describe('resolveHeaders', () => {
   test('string values', async () => {
     const headers = {
       'content-type': 'application/json',
-      'authorization': 'Bearer token123'
+      authorization: 'Bearer token123',
     }
     await expect(cs.resolveHeaders(headers)).resolves.toEqual({
       'content-type': 'application/json',
-      'authorization': 'Bearer token123'
+      authorization: 'Bearer token123',
     })
   })
 
   test('sync function values', async () => {
     const headers = {
       'x-timestamp': () => '2023-01-01',
-      'x-random': () => 'abc123'
+      'x-random': () => 'abc123',
     }
     await expect(cs.resolveHeaders(headers)).resolves.toEqual({
       'x-timestamp': '2023-01-01',
-      'x-random': 'abc123'
+      'x-random': 'abc123',
     })
   })
 
   test('async function values', async () => {
     const headers = {
       'x-async': async () => 'async-value',
-      'x-promise': () => Promise.resolve('promise-value')
+      'x-promise': () => Promise.resolve('promise-value'),
     }
     await expect(cs.resolveHeaders(headers)).resolves.toEqual({
       'x-async': 'async-value',
-      'x-promise': 'promise-value'
+      'x-promise': 'promise-value',
     })
   })
 
   test('mixed value types', async () => {
     const headers = {
-      'static': 'static-value',
+      static: 'static-value',
       'sync-func': () => 'sync-value',
-      'async-func': async () => 'async-value'
+      'async-func': async () => 'async-value',
     }
     await expect(cs.resolveHeaders(headers)).resolves.toEqual({
-      'static': 'static-value',
+      static: 'static-value',
       'sync-func': 'sync-value',
-      'async-func': 'async-value'
+      'async-func': 'async-value',
     })
   })
 
   test('merge with existing gotHeaders', async () => {
     const headers = {
-      'x-custom': 'custom-value'
+      'x-custom': 'custom-value',
     }
     const gotHeaders = {
       'content-type': 'application/xml',
-      'user-agent': 'test-agent'
+      'user-agent': 'test-agent',
     }
     await expect(cs.resolveHeaders(headers, gotHeaders)).resolves.toEqual({
       'content-type': 'application/xml',
       'user-agent': 'test-agent',
-      'x-custom': 'custom-value'
+      'x-custom': 'custom-value',
     })
   })
 
   test('override existing gotHeaders', async () => {
     const headers = {
-      'content-type': () => 'application/json'
+      'content-type': () => 'application/json',
     }
     const gotHeaders = {
-      'content-type': 'application/xml'
+      'content-type': 'application/xml',
     }
     await expect(cs.resolveHeaders(headers, gotHeaders)).resolves.toEqual({
-      'content-type': 'application/json'
+      'content-type': 'application/json',
     })
   })
 })
