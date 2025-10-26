@@ -17,7 +17,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-import { Config, JsonDB } from 'node-json-db'
+import { JsonDB } from 'node-json-db'
+import { Config } from 'node-json-db/dist/lib/JsonDBConfig'
 import { createPrivateKey, KeyObject, X509Certificate } from 'node:crypto'
 import {
   buildDeviceCertificateMetadata,
