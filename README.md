@@ -26,7 +26,7 @@ smart energy devices attached to it.
 
 ### Requirements
 
-Developed and tested against `node 16`. Install from `npm`:
+Developed and tested against `node 24`. Install from `npm`:
 
 ```
 npm i @smartdcc/dccboxed-keystore
