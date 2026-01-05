@@ -58,7 +58,7 @@
     "yargs": "^18.0.0"
   },
   "dependencies": {
-    "asn1-ts": "^8.0.2",
+    "asn1-ts": "^11.0.4",
     "content-type": "^1.0.4",
     "fast-xml-parser": "^5.0.9",
     "got": "^11.8.5",
