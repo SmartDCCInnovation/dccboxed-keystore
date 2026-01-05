@@ -21,9 +21,8 @@ updates:
       # version 8 of asn1-ts is the last to support commonjs, so prevent upgrading to version 9+
       - dependency-name: asn1-ts
         versions: [">=9.0.0"]
+      - dependency-name: "@types/node"
+        versions: [ "25.x", "27.x", "29.x" ]
     groups:
       typescript-eslint:
         patterns: ["@typescript-eslint/*"]
-    ignore:
-      - dependency-name: "@types/node"
-        versions: [ "25.x", "27.x", "29.x" ]
