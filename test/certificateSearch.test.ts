@@ -20,7 +20,7 @@
 const gotMock = jest.fn()
 jest.mock('got', () => ({ default: gotMock, __esModule: true }))
 import { X509Certificate } from 'crypto'
-import type { Response, OptionsOfTextResponseBody } from 'got'
+import type { Response, OptionsOfTextResponseBody, Headers as GotHeaders } from 'got'
 import {
   buildDeviceCertificateMetadata,
   buildOrgCertificateMetadata,
@@ -1397,7 +1397,7 @@ describe('resolveHeaders', () => {
     const headers = {
       'x-custom': 'custom-value',
     }
-    const gotHeaders = {
+    const gotHeaders: GotHeaders = {
       'content-type': 'application/xml',
       'user-agent': 'test-agent',
     }

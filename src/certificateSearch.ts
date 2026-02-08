@@ -18,7 +18,7 @@
  */
 
 import { XMLParser, XMLBuilder } from 'fast-xml-parser'
-import got, { Headers as GotHeaders } from 'got'
+import got from 'got'
 import { parse as contentType } from 'content-type'
 import { X509Certificate } from 'crypto'
 import {
@@ -123,18 +123,18 @@ export type Headers = Record<
 >
 
 /**
- * Resolves a Headers object into a GotHeaders object by evaluating any function values
+ * Resolves a Headers object into a wider object by evaluating any function values
  * and resolving any promises.
  *
  * @param headers - The Headers object containing string values, functions or promises
- * @param gotHeaders - Optional existing GotHeaders object to merge with
- * @returns Promise resolving to a GotHeaders object with all string values
+ * @param implHeaders - Optional existing headers object to merge with (e.g. got's headers)
+ * @returns Promise resolving to a headers record with all string values
  */
-export async function resolveHeaders(
+export async function resolveHeaders<T>(
   headers: Headers = {},
-  gotHeaders: GotHeaders = {},
-): Promise<GotHeaders> {
-  const resolvedHeaders: GotHeaders = { ...gotHeaders }
+  implHeaders: Record<string, string | T> = {},
+): Promise<Record<string, string | T>> {
+  const resolvedHeaders: Record<string, string | T> = { ...implHeaders }
 
   for (const [key, value] of Object.entries(headers)) {
     if (typeof value === 'function') {
