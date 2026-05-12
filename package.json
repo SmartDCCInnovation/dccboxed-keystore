@@ -59,7 +59,7 @@
   },
   "dependencies": {
     "asn1-ts": "^8.0.2",
-    "content-type": "^1.0.4",
+    "content-type": "^2.0.0",
     "fast-xml-parser": "^5.0.9",
     "got": "^11.8.5",
     "node-json-db": "^2.1.1",
